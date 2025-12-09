@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label"
 
 export function LoginPage() {
   return (
+    <div className="flex min-h-screen flex-col justify-center items-center bg-zinc-50 font-sans dark:bg-black p-4">
     <Card className="w-full max-w-sm">
       <CardHeader>
         <CardTitle>Login to your account</CardTitle>
@@ -54,10 +55,8 @@ export function LoginPage() {
         <Button type="submit" className="w-full">
           Login
         </Button>
-        <Button variant="outline" className="w-full">
-          Login with Google
-        </Button>
       </CardFooter>
     </Card>
+    </div>
   )
 }
