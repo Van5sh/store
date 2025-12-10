@@ -52,9 +52,9 @@ export default function UserLayout({
       </nav> 
       
       <main className="bg-white rounded-lg shadow-sm p-6 border border-gray-200"> 
-        {active === "profile" && children} 
-        {active === "edit" && editUser} 
-        {active === "orders" && orderdetails} 
+        {active === "profile" && children}
+        {active === "edit" && editUser}
+        {active === "orders" && orderdetails}
       </main> 
     </div> 
   ); 
