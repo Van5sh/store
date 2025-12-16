@@ -5,11 +5,11 @@ type Props = {
   children: React.ReactNode; 
   editUser: React.ReactNode; 
   orderdetails: React.ReactNode; 
-}; 
+};
  
 export default function UserLayout({  
-  children,  
-  editUser, 
+  children,
+  editUser,
   orderdetails 
 }: Props) { 
   const [active, setActive] = useState<"profile" | "edit" | "orders">("profile"); 
