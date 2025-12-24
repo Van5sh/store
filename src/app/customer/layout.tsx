@@ -13,8 +13,8 @@ export default function CustomerLayout({
             label: "Profile",
             link: "/customer/profile",
             subItems: [
+                { label: "User", link: "/customer/profile/user" },
                 { label: "Settings", link: "/customer/profile/settings" },
-                { label: "Billing", link: "/customer/profile/billing" },
                 { label: "Notifications", link: "/customer/profile/notifications" }
             ]
         },

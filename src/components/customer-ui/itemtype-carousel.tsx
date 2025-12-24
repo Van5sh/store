@@ -1,39 +1,52 @@
-import * as React from "react"
 
-import { Card, CardContent } from "@/components/ui/card"
+"use client";
+
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import {
     Carousel,
     CarouselContent,
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
-} from "@/components/ui/carousel"
+} from "@/components/ui/carousel";
 
-export default function CarouselSize() {
+interface CarouselProps {
+    Items: {
+        label: string;
+        img: string;
+    }[]
+}
+
+const CarouselSize: React.FC<CarouselProps> = ({ Items }) => {
     return (
         <Carousel
             opts={{ align: "start" }}
-            className="w-full overflow-visible"
+            className="w-full"
         >
-            <CarouselContent className="-ml-4">
-                {Array.from({ length: 6 }).map((_, index) => (
+            <CarouselContent className="-ml-2">
+                {Items.map((item, index) => (
                     <CarouselItem
                         key={index}
-                        className="pl-4 basis-full sm:basis-1/2 lg:basis-1/4"
+                        className="pl-2 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
                     >
-                        <Card className="hover:shadow-lg transition">
+                        <Card className="hover:shadow-lg transition-shadow">
                             <CardContent className="flex aspect-square items-center justify-center p-6">
-                                <span className="text-3xl font-bold text-gray-700">
-                                    {index + 1}
-                                </span>
+                                <div className="text-center">
+                                    <div className="text-4xl mb-2">{item.img}</div>
+                                    <span className="text-lg font-semibold text-gray-700">
+                                        {item.label}
+                                    </span>
+                                </div>
                             </CardContent>
                         </Card>
                     </CarouselItem>
                 ))}
             </CarouselContent>
-
             <CarouselPrevious />
             <CarouselNext />
         </Carousel>
     )
 }
+
+export default CarouselSize;
