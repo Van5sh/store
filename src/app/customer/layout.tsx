@@ -7,13 +7,16 @@ export default function CustomerLayout({
 }) {
     const items = [
         { label: "Home", link: "/customer" },
-        { label: "Services", link: "/customer/services" },
+        { label: "Services", link: "/customer/services", subItems: [
+                { label: "Complaints", link: "/customer/services/complaints" },
+                { label: "Gifts", link: "/customer/services/gifts" },
+            ] },
         { label: "Orders", link: "/customer/orders" },
         {
             label: "Profile",
             link: "/customer/profile",
             subItems: [
-                { label: "User", link: "/customer/profile/user" },
+                { label: "User", link: "/customer/user" },
                 { label: "Settings", link: "/customer/profile/settings" },
                 { label: "Notifications", link: "/customer/profile/notifications" }
             ]
@@ -24,7 +27,6 @@ export default function CustomerLayout({
             subItems: [
                 { label: "Contact Us", link: "/customer/support/contact" },
                 { label: "FAQ", link: "/customer/support/faq" },
-                { label: "Complaint", link: "/customer/support/complaint" }
             ]
         },
     ];
