@@ -1,4 +1,4 @@
-import TopNavigation from "@/components/customer-ui/navigation-menu";
+import TopNavigation  from "@/components/customer-ui/new-navigation-menu";
 
 export default function CustomerLayout({
                                            children,
@@ -32,8 +32,10 @@ export default function CustomerLayout({
     ];
 
     return (
-        <div className="h-screen flex flex-col overflow-hidden">
-            <TopNavigation items={items}/>
+        <div className="h-screen justify-center items-center flex flex-col overflow-hidden">
+            <div className={`justify-center bg-white w-full shadow-md`}>
+                <TopNavigation items={items}/>
+            </div>
             <div className="flex-1 overflow-auto">
                 <div className="max-w-7xl mx-auto px-4 py-6">
                     {children}
