@@ -1,4 +1,5 @@
 import TopNavigation from "@/components/customer-ui/new-navigation-menu";
+import { colors } from "@/lib/colors";
 
 export default function CustomerLayout({
                                            children,
@@ -11,16 +12,10 @@ export default function CustomerLayout({
                 { label: "Complaints", link: "/customer/services/complaints" },
                 { label: "Gifts", link: "/customer/services/gifts" },
             ] },
-        { label: "Orders", link: "/customer/orders" },
-        {
-            label: "Profile",
-            link: "/customer/profile",
-            subItems: [
-                { label: "User", link: "/customer/user" },
-                { label: "Settings", link: "/customer/profile/settings" },
-                { label: "Notifications", link: "/customer/profile/notifications" }
-            ]
-        },
+        { label: "Orders", link: "/customer/orders", subItems: [
+            {label: "Cart", link: "/customer/orders/cart"},
+            {label: "History", link: "/customer/orders/notifications"}
+        ] },        
         {
             label: "Support",
             link: "/customer/support",
@@ -32,7 +27,7 @@ export default function CustomerLayout({
     ];
 
     return (
-        <div className="h-screen flex flex-col overflow-hidden">
+        <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: colors.background.app }}>
             <div className={`justify-center bg-white w-full shadow-md`}>
                 <TopNavigation items={items}/>
             </div>
