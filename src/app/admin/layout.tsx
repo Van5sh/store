@@ -9,6 +9,7 @@ type AdminLayoutProps = {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
     const [activeTab, setActiveTab] = useState("Dashboard");
+    const [mode, setMode]=useState("light");
     return (
         <div className="max-w-7xl h-screen flex flex-col overflow-hidden">
             <h1 className="text-3xl p-4 bg-gray-50 font-bold">Admin Panel</h1>

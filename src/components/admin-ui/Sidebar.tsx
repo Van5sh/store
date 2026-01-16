@@ -18,6 +18,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 interface SidebarProps {
     activeTab?: string;
     setActiveTab?: (tab: string) => void;
+    mode?: string;
+    setMode?: (mode: string) => void;
 }
 
 const Sidebar:React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
