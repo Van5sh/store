@@ -1,7 +1,12 @@
+import { ShoppingBasket } from 'lucide-react';
+
 const VendorPage= ()=> {
     return (
         <div>
-            <h1>Vendor Page</h1>
+            Vendor Page
+            <div>
+                <ShoppingBasket size={24}/>   
+            </div>
         </div>
     )
 }

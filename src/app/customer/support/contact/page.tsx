@@ -28,13 +28,12 @@ const ContactPage = () => {
   return (
     <div className="min-h-screen py-12" style={{ backgroundColor: colors.background.app }}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-3" style={{ color: colors.text.accent }}>
             Contact Us
           </h1>
           <p className="text-lg" style={{ color: colors.text.secondary }}>
-            We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            We&apos;d love to hear from you. Send us a message and we'll respond as soon as possible.
           </p>
         </div>
 

@@ -13,8 +13,14 @@ import {
     Sun,
     Moon,
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
-const Sidebar = () => {
+interface SidebarProps {
+    activeTab?: string;
+    setActiveTab?: (tab: string) => void;
+}
+
+const Sidebar:React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
@@ -23,7 +29,7 @@ const Sidebar = () => {
 
     const menuItems = [
         { icon: LayoutDashboard, label: "Dashboard" },
-        { icon: Users, label: "Users" },
+        { icon: Users, label: "Orders" },
         { icon: Settings, label: "Analytics" },
         { icon: FileText, label: "Activity" },
     ];
@@ -33,7 +39,6 @@ const Sidebar = () => {
         console.log("Theme toggled:", !isDarkMode ? "dark" : "light");
     };
 
-    // Close user menu when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -54,32 +59,38 @@ const Sidebar = () => {
             className={`transition-all duration-300 bg-gray-50 p-4 flex flex-col relative
             ${isOpen ? "w-48" : "w-16"}`}
         >
-            {/* Toggle Sidebar */}
             <button
-                onClick={() => setIsOpen((prev) => !prev)}
+                onClick={() => {
+                    setIsOpen((prev) => !prev)
+                }}
                 className="mb-4 p-2 hover:bg-gray-200 rounded-lg"
             >
                 {isOpen ? <PanelLeftClose size={20} /> : <PanelLeftOpen size={20} />}
             </button>
-
-            {/* Navigation */}
             <nav className="space-y-2 flex-1">
                 {menuItems.map((item) => (
-                    <button
-                        key={item.label}
-                        className="w-full flex items-center gap-3 p-2 hover:bg-gray-200 rounded-lg"
-                    >
+                    <Tooltip key={item.label}>
+                    <TooltipTrigger asChild>
+                        <button
+                        onClick={() => setActiveTab && setActiveTab(item.label)}
+                        className={`w-full flex items-center gap-3 p-2 hover:bg-gray-200 rounded-lg
+                            ${activeTab === item.label ? "bg-gray-200" : ""}`}
+                        >
                         <item.icon size={20} />
                         {isOpen && (
-                            <span className="font-semibold text-sm">
-                                {item.label}
-                            </span>
+                            <span className="font-semibold text-sm">{item.label}</span>
                         )}
-                    </button>
+                        </button>
+                    </TooltipTrigger>
+                    {!isOpen && (
+                        <TooltipContent side="right">
+                        <span className="text-sm">{item.label}</span>
+                        </TooltipContent>
+                    )}
+                    </Tooltip>
                 ))}
-            </nav>
+            </nav>            
 
-            {/* User Menu */}
             <div className="relative" ref={userMenuRef}>
                 <button
                     onClick={() => setShowUserMenu((prev) => !prev)}
