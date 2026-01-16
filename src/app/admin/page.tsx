@@ -1,12 +1,5 @@
-'use client';
-import React, { useState } from "react";
+import { redirect } from "next/navigation";
 
-const AdminPage = () => {
-    return (
-        <div>
-            <h1>Admin Page</h1>
-        </div>
-    );
-};
-
-export default AdminPage;
+export default function AdminPage() {
+  redirect("/admin/dashboard");
+}
