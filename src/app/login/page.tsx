@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -10,8 +12,10 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useRouter } from "next/navigation"
 
 export function LoginPage() {
+  const router = useRouter();
   return (
     <div className="flex min-h-screen flex-col justify-center items-center bg-zinc-50 font-sans dark:bg-black p-4">
     <Card className="w-full max-w-sm">
@@ -52,7 +56,7 @@ export function LoginPage() {
         </form>
       </CardContent>
       <CardFooter className="flex-col gap-2">
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" onClick={()=>{router.push("/admin/")}}>
           Login
         </Button>
       </CardFooter>

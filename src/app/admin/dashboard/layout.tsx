@@ -18,7 +18,7 @@ export default function DashboardLayout({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="max-w-7xl min-h-screen flex flex-col">
+    <div className="min-h-screen w-full flex flex-col">
       <Tabs defaultValue="users" className="flex-1 flex flex-col justify-center items-center">
         <TabsList className="mx-4 mt-4 self-start">
           <TabsTrigger value="users">Users</TabsTrigger>

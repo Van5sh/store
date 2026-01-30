@@ -13,7 +13,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     <div className={mode === "dark" ? "dark" : ""}>
       <div
         className="
-                max-w-7xl h-screen flex flex-col overflow-hidden
+                h-screen flex flex-col overflow-hidden justify-center
                 bg-linear-to-br from-blue-50 via-white to-blue-100
                 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900
             "
