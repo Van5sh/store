@@ -37,6 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     const menuItems = [
         { icon: LayoutDashboard, label: "Dashboard", link: "/admin/dashboard" },
         { icon: Users, label: "Orders", link: "/admin/orders" },
+        { icon: Users, label: "Warehouse", link: "/admin/warehouse" },
         { icon: Settings, label: "Analytics", link: "/admin/analytics" },
         { icon: FileText, label: "Activity", link: "/admin/activity" },
     ];
