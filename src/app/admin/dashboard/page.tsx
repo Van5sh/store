@@ -19,7 +19,6 @@ const Dashboard=()=>{
                     ))} */}
                 </tbody>
             </table>
-            <p>Hello</p>
         </div>
     );
 }
