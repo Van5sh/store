@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 
 export const apiHandler = axios.create({
-    baseURL:'http://localhost:3000/api',
+    baseURL: process.env.BACKEND_URL,
     headers:{
         'Content-Type':'application/json'
     },
