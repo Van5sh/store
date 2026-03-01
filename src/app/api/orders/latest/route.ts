@@ -4,7 +4,15 @@ import { apiHandler } from "../../../utils/ApiHandler"
 
 export async function GET(req: NextRequest) {
   try {
-    const res=await apiHandler.get("/orders/latest")
+    const authHeader = req.headers.get("authorization")
+    const token = authHeader?.startsWith("Bearer ")
+      ? authHeader.replace("Bearer ", "")
+      : req.cookies.get("access_token")?.value
+
+    const limit = req.nextUrl.searchParams.get("limit") ?? "10"
+    const res = await apiHandler.get(`/order/latest?limit=${limit}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    })
     return NextResponse.json(res.data, { status: 200 })
   } catch (error) {
     const err = error as AxiosError<any>

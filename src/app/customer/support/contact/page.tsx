@@ -80,7 +80,6 @@ const ContactPage = () => {
             </div>
           </div>
 
-          {/* Contact Form */}
           <div className="lg:col-span-2">
             <div className="rounded-lg shadow-md p-8" style={{ backgroundColor: colors.background.card }}>
               <h2 className="text-2xl font-semibold mb-6" style={{ color: colors.text.primary }}>

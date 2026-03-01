@@ -12,10 +12,9 @@ const greeting = [
 ];
 
 interface Order {
-    id: string | number;
-    item: string;
-    date: string;
-    status: string;
+    id: string;
+    itemName: string;
+    orderDate: string;
 }
 
 const CustomerPage = () => {
@@ -45,12 +44,17 @@ const CustomerPage = () => {
             setOrdersLoading(true)
             setOrdersError(null)
             try {
-                const res = await fetch("/api/orders/allorders", {
+                const res = await fetch("/api/orders/latest", {
                     method: "GET",
                 })
-                const data = await res.json()
+                const contentType = res.headers.get("content-type") ?? ""
+                const data = contentType.includes("application/json")
+                    ? await res.json()
+                    : null
                 if (!res.ok) {
-                    throw new Error(data?.message ?? "Failed to fetch orders")
+                    throw new Error(
+                        data?.message ?? "Failed to fetch orders"
+                    )
                 }
 
                 const list = Array.isArray(data)
@@ -59,19 +63,10 @@ const CustomerPage = () => {
                     ? data.orders
                     : []
 
-                const mapped: Order[] = list.map((order: any, index: number) => ({
-                    id: order.id ?? order.orderId ?? order._id ?? index,
-                    item:
-                        order.item ??
-                        order.itemName ??
-                        order.productName ??
-                        "Order",
-                    date:
-                        order.date ??
-                        order.createdAt ??
-                        order.updatedAt ??
-                        "N/A",
-                    status: order.status ?? "Pending",
+                const mapped: Order[] = list.map((order: any) => ({
+                    id: String(order.orderId ?? order.id ?? order._id),
+                    itemName: order.orderItemName ?? order.itemName ?? "Order",
+                    orderDate: order.orderDate ?? order.createdAt ?? "N/A",
                 }))
 
                 if (alive) {
@@ -251,21 +246,12 @@ const CustomerPage = () => {
                                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.background.muted}
                                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = ''}
                                         >
-                                            <div className="flex justify-between items-start mb-2">
-                                                <h3 className="font-semibold text-sm" style={{ color: colors.text.primary }}>{order.item}</h3>
+                                            <div className="flex justify-between items-start mb-1">
+                                                <h3 className="font-semibold text-sm" style={{ color: colors.text.primary }}>{order.itemName}</h3>
                                             </div>
-                                            <p className="text-xs mb-2" style={{ color: colors.text.muted }}>{order.date}</p>
-                                            <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium`}
-                                                style={{
-                                                    backgroundColor: order.status === "Delivered" ? colors.amber[100] :
-                                                                     order.status === "Shipped" ? colors.stone[200] :
-                                                                     colors.amber[50],
-                                                    color: order.status === "Delivered" ? colors.amber[800] :
-                                                           order.status === "Shipped" ? colors.stone[700] :
-                                                           colors.amber[700]
-                                                }}>
-                                                {order.status}
-                                            </span>
+                                            <p className="text-xs" style={{ color: colors.text.muted }}>
+                                                {new Date(order.orderDate).toLocaleString()}
+                                            </p>
                                         </div>
                                     ))}
                                 </div>
@@ -278,7 +264,7 @@ const CustomerPage = () => {
                               }}
                               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.amber[50]}
                               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = ''}
-                              onClick={() => router.push("/orders")}
+                              onClick={() => router.push("/orders/history")}
                             >
                                 View All Orders
                             </button>

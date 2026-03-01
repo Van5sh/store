@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Search, UserRound } from "lucide-react";
 import clsx from "clsx";
 import { Input } from "../ui/input";
@@ -18,10 +19,12 @@ interface NavigationMenuProps {
 
 const TopNavigation: React.FC<NavigationMenuProps> = ({ items }) => {
   const pathname = usePathname();
+  const router = useRouter();
   const [openMenu, setOpenMenu] = useState<number | null>(null);
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchExpanded, setSearchExpanded] = useState(false);
+  const { logout } = useAuth();
 
   const isActive = (link: string) =>
     pathname === link || pathname.startsWith(link + "/");
@@ -195,9 +198,9 @@ const TopNavigation: React.FC<NavigationMenuProps> = ({ items }) => {
                   Profile
                 </Link>
 
-                <Link
-                  href="/customer/logout"
-                  className="block px-4 py-2 text-sm transition-colors"
+                <button
+                  type="button"
+                  className="block w-full text-left px-4 py-2 text-sm transition-colors"
                   style={{ color: colors.text.secondary }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = colors.amber[50];
@@ -207,10 +210,14 @@ const TopNavigation: React.FC<NavigationMenuProps> = ({ items }) => {
                     e.currentTarget.style.backgroundColor = '';
                     e.currentTarget.style.color = colors.text.secondary;
                   }}
-                  onClick={() => setUserMenuOpen(false)}
+                  onClick={() => {
+                    logout();
+                    setUserMenuOpen(false);
+                    router.push("/login");
+                  }}
                 >
                   Logout
-                </Link>
+                </button>
               </div>
             )}
           </div>

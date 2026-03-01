@@ -1,5 +1,4 @@
 "use client"
-"use client"
 
 import ProductsCard from "@/components/customer-ui/products-card"
 import React from "react"
@@ -7,6 +6,7 @@ import { colors } from "@/lib/colors"
 import { useParams } from "next/navigation"
 
 interface ProductProps {
+  id: string
   name: string
   price: number
   type: string
@@ -14,6 +14,15 @@ interface ProductProps {
 }
 
 const FALLBACK_IMAGE = "/file.svg"
+
+interface ProductsProps {
+    productId: string
+    productName: string
+    productPrice: number
+    category: string
+    createdAt: string
+    updatedAt: string
+}
 
 export default function ProductsPage() {
   const params = useParams<{ type: string | string[] }>()
@@ -35,7 +44,10 @@ export default function ProductsPage() {
           `/api/product/getproductType?type=${encodeURIComponent(type)}`,
           { method: "GET" }
         )
-        const data = await res.json()
+        const contentType = res.headers.get("content-type") ?? ""
+        const data = contentType.includes("application/json")
+          ? await res.json()
+          : null
         if (!res.ok) {
           throw new Error(data?.message ?? "Failed to fetch products")
         }
@@ -48,15 +60,12 @@ export default function ProductsPage() {
           ? data.data.products
           : []
 
-        const mapped: ProductProps[] = list.map((item: any, index: number) => ({
-          name: item.name ?? item.productName ?? "Product",
-          price: Number(item.price ?? item.cost ?? 0),
-          type: item.type ?? item.category ?? type,
-          img:
-            item.img ??
-            item.image ??
-            (Array.isArray(item.images) ? item.images[0] : null) ??
-            FALLBACK_IMAGE,
+        const mapped: ProductProps[] = list.map((item: ProductsProps, index: number) => ({
+          id: String(item.productId ?? index),
+          name: item.productName ?? "Product",
+          price: Number(item.productPrice ?? 0),
+          type: item.category ?? type,
+          img: FALLBACK_IMAGE,
         }))
 
         if (alive) {
@@ -115,6 +124,7 @@ export default function ProductsPage() {
           {products.map((product, index) => (
             <ProductsCard
               key={`${product.name}-${index}`}
+              id={product.id}
               name={product.name}
               price={product.price}
               type={product.type}
