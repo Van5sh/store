@@ -13,7 +13,6 @@ apiHandler.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     const status = error.response?.status;
-
     if (status === 401) {
       console.error('Unauthorized');
     }

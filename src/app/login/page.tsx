@@ -13,78 +13,127 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/AuthContext"
 
-export default function LoginPage()  {
+export default function LoginPage() {
   const router = useRouter()
+  const { login, signup } = useAuth()
+
+  const [userName, setUserName] = React.useState("")
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
+  const [role, setRole] = React.useState<"customer" | "vendor" |"admin">("customer")
+  const [isSignup, setIsSignup] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: email, password }),
-    })
-
-    setLoading(false)
-
-    if (res.ok) {
-      router.push("/admin")
-    } else {
-      const data = await res.json()
-      alert(data.message ?? "Login failed")
+    try {
+      const data = isSignup
+        ? await signup({ userName, password, email, role })
+        : await login({ userName, password })
+      router.push(`/${data.role}`)
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Authentication failed"
+      alert(message)
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
-    <div className="flex min-h-screen flex-col justify-center items-center bg-zinc-50 dark:bg-black p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
-          <CardAction>
-            <Button variant="link">Sign Up</Button>
-          </CardAction>
-        </CardHeader>
+      <div className="flex min-h-screen flex-col justify-center items-center bg-zinc-50 dark:bg-black p-4">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>
+              {isSignup ? "Create an account" : "Login to your account"}
+            </CardTitle>  
+            <CardDescription>
+              {isSignup
+                  ? "Choose a role and create your account"
+                  : "Enter your credentials to login"}
+            </CardDescription>
+            <CardAction>
+              <Button
+                  variant="link"
+                  onClick={() => setIsSignup(!isSignup)}
+              >
+                {isSignup ? "Login" : "Sign Up"}
+              </Button>
+            </CardAction>
+          </CardHeader>
 
-        <CardContent>
-          <form onSubmit={handleLogin}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="text"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
+          <CardContent>
+            <form onSubmit={handleSubmit}>
+              <div className="flex flex-col gap-6">
+                <div className="grid gap-2">
+                  <Label>Username</Label>
+                  <Input
+                      type="text"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      required
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label>Password</Label>
+                  <Input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                  />
+                </div>
+
+                {/* Signup-only role selector */}
+                {isSignup && (
+                    <div className="grid gap-2">
+                      <Label>Email</Label>
+                      <Input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                      />
+                    </div>
+                )}
+
+                {isSignup && (
+                    <div className="grid gap-2">
+                      <Label>Role</Label>
+                      <select
+                          className="border rounded px-3 py-2"
+                          value={role}
+                          onChange={(e) =>
+                              setRole(e.target.value as "customer" | "vendor" |"admin" )
+                          }
+                      >
+                        <option value="customer">Customer</option>
+                        <option value="vendor">Vendor</option>
+                      </select>
+                    </div>
+                )}
               </div>
 
-              <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            <Button type="submit" className="w-full mt-6" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+              <Button
+                  type="submit"
+                  className="w-full mt-6"
+                  disabled={loading}
+              >
+                {loading
+                    ? isSignup
+                        ? "Creating account..."
+                        : "Logging in..."
+                    : isSignup
+                        ? "Sign Up"
+                        : "Login"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
   )
 }

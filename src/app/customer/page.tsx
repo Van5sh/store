@@ -1,8 +1,9 @@
-"use client";
+"use client"
 
-import React from "react";
-import CarouselSize from "@/components/customer-ui/itemtype-carousel";
-import { colors } from "@/lib/colors";
+import React from "react"
+import CarouselSize from "@/components/customer-ui/itemtype-carousel"
+import { colors } from "@/lib/colors"
+import { useRouter } from "next/navigation"
 
 const greeting = [
     "Hello, valued customer!",
@@ -11,15 +12,18 @@ const greeting = [
 ];
 
 interface Order {
-    id: number;
+    id: string | number;
     item: string;
     date: string;
     status: string;
 }
 
 const CustomerPage = () => {
-    const [randomGreeting, setRandomGreeting] = React.useState(greeting[0]);
-    const [orders, setOrders] = React.useState<Order[]>([]);
+    const router = useRouter()
+    const [randomGreeting, setRandomGreeting] = React.useState(greeting[0])
+    const [orders, setOrders] = React.useState<Order[]>([])
+    const [ordersLoading, setOrdersLoading] = React.useState(false)
+    const [ordersError, setOrdersError] = React.useState<string | null>(null)
 
     const productItems = [
         { label: "Electronics", img: "💻", type:"electronics"},
@@ -31,15 +35,67 @@ const CustomerPage = () => {
     ];
 
     React.useEffect(() => {
-        const randomIndex = Math.floor(Math.random() * greeting.length);
-        setRandomGreeting(greeting[randomIndex]);
-        const mockOrders = [
-            { id: 1, item: "Product A", date: "2024-12-20", status: "Delivered" },
-            { id: 2, item: "Product B", date: "2024-12-22", status: "Shipped" },
-            { id: 3, item: "Product C", date: "2024-12-24", status: "Processing" }
-        ];
-        setOrders(mockOrders);
-    }, []);
+        const randomIndex = Math.floor(Math.random() * greeting.length)
+        setRandomGreeting(greeting[randomIndex])
+    }, [])
+
+    React.useEffect(() => {
+        let alive = true
+        const fetchOrders = async () => {
+            setOrdersLoading(true)
+            setOrdersError(null)
+            try {
+                const res = await fetch("/api/orders/allorders", {
+                    method: "GET",
+                })
+                const data = await res.json()
+                if (!res.ok) {
+                    throw new Error(data?.message ?? "Failed to fetch orders")
+                }
+
+                const list = Array.isArray(data)
+                    ? data
+                    : Array.isArray(data?.orders)
+                    ? data.orders
+                    : []
+
+                const mapped: Order[] = list.map((order: any, index: number) => ({
+                    id: order.id ?? order.orderId ?? order._id ?? index,
+                    item:
+                        order.item ??
+                        order.itemName ??
+                        order.productName ??
+                        "Order",
+                    date:
+                        order.date ??
+                        order.createdAt ??
+                        order.updatedAt ??
+                        "N/A",
+                    status: order.status ?? "Pending",
+                }))
+
+                if (alive) {
+                    setOrders(mapped)
+                }
+            } catch (err) {
+                const message =
+                    err instanceof Error ? err.message : "Failed to fetch orders"
+                if (alive) {
+                    setOrdersError(message)
+                    setOrders([])
+                }
+            } finally {
+                if (alive) {
+                    setOrdersLoading(false)
+                }
+            }
+        }
+
+        fetchOrders()
+        return () => {
+            alive = false
+        }
+    }, [])
 
     return (
         <div className="min-h-screen p-4 sm:p-6 lg:p-8" style={{ backgroundColor: colors.background.app }}>
@@ -179,7 +235,11 @@ const CustomerPage = () => {
                             <h2 className="text-xl font-semibold mb-4" style={{ color: colors.text.primary }}>Recent Orders</h2>
                             <p className="text-sm mb-4" style={{ color: colors.text.secondary }}>Your latest purchases</p>
 
-                            {orders.length === 0 ? (
+                            {ordersLoading ? (
+                                <p className="italic text-sm" style={{ color: colors.text.muted }}>Loading orders...</p>
+                            ) : ordersError ? (
+                                <p className="italic text-sm" style={{ color: colors.text.muted }}>{ordersError}</p>
+                            ) : orders.length === 0 ? (
                                 <p className="italic text-sm" style={{ color: colors.text.muted }}>No orders found.</p>
                             ) : (
                                 <div className="space-y-3">
@@ -217,7 +277,9 @@ const CustomerPage = () => {
                                 border: `1px solid ${colors.amber[600]}` 
                               }}
                               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.amber[50]}
-                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = ''}>
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = ''}
+                              onClick={() => router.push("/orders")}
+                            >
                                 View All Orders
                             </button>
                         </div>

@@ -1,3 +1,12 @@
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+
 const Dashboard = () => {
     const data = [
         {
@@ -25,41 +34,44 @@ const Dashboard = () => {
 
     // Extract column names dynamically (ignore id if you want)
     const columns = Object.keys(data[0]).filter((key) => key !== "id");
+    const columnLabels: Record<string, string> = {
+        name: "Name",
+        email: "Email",
+        phone: "Phone",
+        role: "Role",
+    };
 
     return (
-        <div className="overflow-x-auto">
-            <table className="min-w-full border border-gray-300 text-sm">
-                <thead>
-                    <tr className="bg-gray-200">
-                        {columns.map((column) => (
-                            <th
-                                key={column}
-                                className="border border-gray-300 p-3 text-left capitalize"
-                            >
-                                {column}
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {data.map((row) => (
-                        <tr key={row.id} className="hover:bg-gray-100">
-                            {columns.map((column) => (
-                                <td
-                                    key={column}
-                                    className="border border-gray-300 p-2"
-                                >
-                                    {row[column]}
-                                </td>
-                            ))}
-                        </tr>
+        <Table className="min-w-full border border-gray-300 text-sm">
+            <TableHeader>
+                <TableRow className="bg-gray-200">
+                    {columns.map((column) => (
+                        <TableHead
+                            key={column}
+                            className="border border-gray-300 p-3 text-left capitalize"
+                        >
+                            {columnLabels[column] ?? column}
+                        </TableHead>
                     ))}
-                </tbody>
-            </table>
-        </div>
+                </TableRow>
+            </TableHeader>
+
+            <TableBody>
+                {data.map((row) => (
+                    <TableRow key={row.id} className="hover:bg-gray-100">
+                        {columns.map((column) => (
+                            <TableCell
+                                key={column}
+                                className="border border-gray-300 p-2"
+                            >
+                                {row[column]}
+                            </TableCell>
+                        ))}
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
     );
 };
 
 export default Dashboard;
-

@@ -5,12 +5,10 @@ export function proxy(req: NextRequest) {
   const role = req.cookies.get("role")?.value
   const pathname = req.nextUrl.pathname
 
-  // Not logged in
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url))
   }
-
-  // Role-based access
+  
   if (pathname.startsWith("/admin") && role !== "admin") {
     return NextResponse.redirect(new URL(`/${role}`, req.url))
   }

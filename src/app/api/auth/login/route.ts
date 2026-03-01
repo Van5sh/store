@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { AxiosError } from "axios"
 import { apiHandler } from "../../../utils/ApiHandler"
 
 export async function POST(req: NextRequest) {
@@ -10,14 +11,36 @@ export async function POST(req: NextRequest) {
       password: body.password,
     })
 
+    if (res.data?.status === "error") {
+      return NextResponse.json(
+        { message: res.data.message ?? "Login failed" },
+        { status: res.data.statusCode ?? 401 }
+      )
+    }
+
     const token = res.data.access_token
-    const role = res.data.role
+    const role = res.data.role ?? res.data.user?.role
+
+    const user = {
+      id: res.data.id ?? res.data.userId ?? res.data.user?.id,
+      userName: res.data.userName ?? res.data.user?.userName,
+      name: res.data.name ?? res.data.user?.name ?? res.data.userName,
+      email: res.data.email ?? res.data.user?.email,
+      role,
+    }
 
     console.log("Received access token:", token)
     console.log("Received role:", role)
 
+    if (!token || !role || !user.id) {
+      return NextResponse.json(
+        { message: "Invalid login response from server" },
+        { status: 502 }
+      )
+    }
+
     const response = NextResponse.json(
-      { role },
+      { role, access_token: token, user },
       { status: 200 }
     )
 
@@ -37,9 +60,14 @@ export async function POST(req: NextRequest) {
 
     return response
   } catch (error) {
-    return NextResponse.json(
-      { message: "Invalid credentials" },
-      { status: 401 }
-    )
+    const err = error as AxiosError<any>
+    const status = err.response?.status ?? 500
+    const data = err.response?.data
+    const message =
+      data?.message ??
+      data?.error ??
+      (status === 401 ? "Invalid credentials" : "Login failed")
+
+    return NextResponse.json({ message, details: data }, { status })
   }
 }
