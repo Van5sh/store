@@ -4,6 +4,7 @@ import React from "react"
 import CarouselSize from "@/components/customer-ui/itemtype-carousel"
 import { colors } from "@/lib/colors"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/AuthContext"
 
 const greeting = [
     "Hello, valued customer!",
@@ -19,6 +20,7 @@ interface Order {
 
 const CustomerPage = () => {
     const router = useRouter()
+    const { user } = useAuth()
     const [randomGreeting, setRandomGreeting] = React.useState(greeting[0])
     const [orders, setOrders] = React.useState<Order[]>([])
     const [ordersLoading, setOrdersLoading] = React.useState(false)
@@ -44,9 +46,15 @@ const CustomerPage = () => {
             setOrdersLoading(true)
             setOrdersError(null)
             try {
-                const res = await fetch("/api/orders/latest", {
-                    method: "GET",
-                })
+                if (!user?.id) {
+                    setOrders([])
+                    setOrdersError("Please sign in to view your orders.")
+                    return
+                }
+                const res = await fetch(
+                    `/api/orders/history?userId=${encodeURIComponent(user.id)}&status=pending,shipped,delivered,cancelled`,
+                    { method: "GET" }
+                )
                 const contentType = res.headers.get("content-type") ?? ""
                 const data = contentType.includes("application/json")
                     ? await res.json()
@@ -57,10 +65,10 @@ const CustomerPage = () => {
                     )
                 }
 
-                const list = Array.isArray(data)
-                    ? data
-                    : Array.isArray(data?.orders)
+                const list = Array.isArray(data?.orders)
                     ? data.orders
+                    : Array.isArray(data)
+                    ? data
                     : []
 
                 const mapped: Order[] = list.map((order: any) => ({
@@ -70,7 +78,7 @@ const CustomerPage = () => {
                 }))
 
                 if (alive) {
-                    setOrders(mapped)
+                    setOrders(mapped.slice(0, 5))
                 }
             } catch (err) {
                 const message =
@@ -90,7 +98,7 @@ const CustomerPage = () => {
         return () => {
             alive = false
         }
-    }, [])
+    }, [user?.id])
 
     return (
         <div className="min-h-screen p-4 sm:p-6 lg:p-8" style={{ backgroundColor: colors.background.app }}>

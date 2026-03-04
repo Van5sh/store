@@ -2,6 +2,7 @@
 import React from "react"
 import { colors } from "@/lib/colors"
 import { PackageSearch, Package, Clock, CheckCircle2, XCircle, Loader2 } from "lucide-react"
+import { useAuth } from "@/contexts/AuthContext"
 
 interface Order {
     orderId: string,
@@ -26,10 +27,22 @@ const getStatusStyle = (status: string) => {
 
 const HistoryPage = () => {
     const [orders, setOrders] = React.useState<Order[]>([])
+    const [loading, setLoading] = React.useState(false)
+    const [error, setError] = React.useState<string | null>(null)
+    const { user } = useAuth()
     React.useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const res = await fetch("/api/orders/latest")
+                if (!user?.id) {
+                    setOrders([])
+                    setError("Please sign in to view your order history.")
+                    return
+                }
+                setLoading(true)
+                setError(null)
+                const res = await fetch(
+                    `/api/orders/history?userId=${encodeURIComponent(user.id)}&status=delivered,cancelled`
+                )
                 const contentType = res.headers.get("content-type") ?? ""
                 const data = contentType.includes("application/json")
                     ? await res.json()
@@ -44,19 +57,22 @@ const HistoryPage = () => {
                         `Failed to fetch order history (status ${res.status})`
                     throw new Error(message)
                 }
-                const list = Array.isArray(data)
-                    ? data
-                    : Array.isArray(data?.orders)
+                const list = Array.isArray(data?.orders)
                     ? data.orders
+                    : Array.isArray(data)
+                    ? data
                     : []
                 setOrders(list)
             } catch (err) {
                 console.error("Failed to fetch order history:", err)
                 setOrders([])
+                setError(err instanceof Error ? err.message : "Failed to fetch order history")
+            } finally {
+                setLoading(false)
             }
         }
         fetchHistory()
-    }, [])
+    }, [user?.id])
 
     return (
         <div className="max-w-2xl mx-auto py-8 px-4">
@@ -84,7 +100,21 @@ const HistoryPage = () => {
             <div className="mb-6" style={{ height: "1px", backgroundColor: colors.border.light }} />
 
             {/* Empty state */}
-            {orders.length === 0 ? (
+            {loading ? (
+                <div
+                    className="flex flex-col items-center justify-center py-20 rounded-xl"
+                    style={{ backgroundColor: colors.background.card, border: `1px dashed ${colors.border.light}` }}
+                >
+                    <p className="text-sm" style={{ color: colors.text.secondary }}>Loading order history...</p>
+                </div>
+            ) : error ? (
+                <div
+                    className="flex flex-col items-center justify-center py-20 rounded-xl"
+                    style={{ backgroundColor: colors.background.card, border: `1px dashed ${colors.border.light}` }}
+                >
+                    <p className="text-sm" style={{ color: colors.text.secondary }}>{error}</p>
+                </div>
+            ) : orders.length === 0 ? (
                 <div
                     className="flex flex-col items-center justify-center py-20 rounded-xl"
                     style={{ backgroundColor: colors.background.card, border: `1px dashed ${colors.border.light}` }}

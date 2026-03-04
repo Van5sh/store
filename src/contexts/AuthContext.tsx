@@ -110,12 +110,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
-
+      console.log("Login response status:", res)
       const data = await res.json()
       if (!res.ok) {
         throw new Error(data?.message ?? "Login failed")
       }
-
       return handleAuthResponse(data)
     },
     [handleAuthResponse]
