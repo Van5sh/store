@@ -129,7 +129,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <div
                         className="
                             absolute bottom-0 left-full ml-3
-                            bg-white dark:bg-gray-900
+                            bg-[#F2F4F7] dark:bg-gray-900
                             border border-gray-200 dark:border-gray-700
                             rounded-lg shadow-lg p-2
                             w-48 z-50

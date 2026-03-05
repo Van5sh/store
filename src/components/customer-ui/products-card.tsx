@@ -104,7 +104,7 @@ const ProductsCard: React.FC<ProductProps> = ({ id, name, price, type, img }) =>
                         </div>
                         <button
                             className="absolute top-3 right-3 text-sm px-3 py-1 rounded-full font-medium"
-                            style={{ backgroundColor: "rgba(0,0,0,0.5)", color: "white", backdropFilter: "blur(4px)" }}
+                            style={{ backgroundColor: "rgba(0,0,0,0.5)", color: colors.white, backdropFilter: "blur(4px)" }}
                             onClick={() => setOpen(false)}
                         >
                             ✕
@@ -124,7 +124,7 @@ const ProductsCard: React.FC<ProductProps> = ({ id, name, price, type, img }) =>
                         </p>
                         <Button
                             className="w-full py-3 text-base font-semibold rounded-lg transition-opacity hover:opacity-90"
-                            style={{ backgroundColor: colors.amber[600], color: "white" }}
+                            style={{ backgroundColor: colors.amber[600], color: colors.white }}
                             onClick={handleOrderNow}
                             disabled={ordering}
                         >

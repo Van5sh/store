@@ -26,7 +26,7 @@ export default function AnalyticsPage() {
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="rounded-lg border border-blue-200 bg-white/70 p-4 shadow-sm"
+            className="rounded-lg border border-blue-200 bg-[#F2F4F7]/70 p-4 shadow-sm"
           >
             <p className="text-xs uppercase tracking-wide text-blue-700/70">
               {stat.label}
@@ -42,7 +42,7 @@ export default function AnalyticsPage() {
       </section>
 
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="rounded-lg border border-blue-200 bg-white/70 p-4 shadow-sm lg:col-span-2">
+        <div className="rounded-lg border border-blue-200 bg-[#F2F4F7]/70 p-4 shadow-sm lg:col-span-2">
           <h2 className="text-sm font-semibold text-blue-900">
             Revenue Breakdown
           </h2>
@@ -65,7 +65,7 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="rounded-lg border border-blue-200 bg-white/70 p-4 shadow-sm">
+        <div className="rounded-lg border border-blue-200 bg-[#F2F4F7]/70 p-4 shadow-sm">
           <h2 className="text-sm font-semibold text-blue-900">Top Products</h2>
           <ul className="mt-4 space-y-3 text-sm text-blue-900">
             {topProducts.map((product) => (

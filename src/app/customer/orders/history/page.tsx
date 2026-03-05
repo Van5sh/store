@@ -14,10 +14,11 @@ interface Order {
 }
 
 const statusConfig: Record<string, { bg: string; text: string; border: string; icon: React.ReactNode }> = {
-    delivered:  { bg: "#f0fdf4", text: "#16a34a", border: "#bbf7d0", icon: <CheckCircle2 size={13} /> },
+    delivered:  { bg: "#10261A", text: "#22C55E", border: "#1B3A27", icon: <CheckCircle2 size={13} /> },
     pending:    { bg: colors.amber[50], text: colors.amber[700], border: colors.border.light, icon: <Clock size={13} /> },
-    cancelled:  { bg: "#fef2f2", text: "#dc2626", border: "#fecaca", icon: <XCircle size={13} /> },
-    processing: { bg: "#eff6ff", text: "#2563eb", border: "#bfdbfe", icon: <Loader2 size={13} /> },
+    cancelled:  { bg: "#2A161A", text: "#F87171", border: "#3B1F25", icon: <XCircle size={13} /> },
+    processing: { bg: "#1A2130", text: "#60A5FA", border: "#243145", icon: <Loader2 size={13} /> },
+    shipped:    { bg: "#1B263B", text: "#38BDF8", border: "#2A3A52", icon: <Loader2 size={13} /> },
 }
 
 const getStatusStyle = (status: string) => {
@@ -41,7 +42,7 @@ const HistoryPage = () => {
                 setLoading(true)
                 setError(null)
                 const res = await fetch(
-                    `/api/orders/history?userId=${encodeURIComponent(user.id)}&status=delivered,cancelled`
+                    `/api/orders/history?userId=${encodeURIComponent(user.id)}&status=pending,processing,shipped,delivered,cancelled`
                 )
                 const contentType = res.headers.get("content-type") ?? ""
                 const data = contentType.includes("application/json")
@@ -62,7 +63,13 @@ const HistoryPage = () => {
                     : Array.isArray(data)
                     ? data
                     : []
-                setOrders(list)
+                const sorted = [...list].sort((a: any, b: any) => {
+                    const aDate = new Date(a.orderDate ?? a.createdAt ?? 0).getTime()
+                    const bDate = new Date(b.orderDate ?? b.createdAt ?? 0).getTime()
+                    return bDate - aDate
+                })
+                console.log("Fetched order history:", sorted)
+                setOrders(sorted)
             } catch (err) {
                 console.error("Failed to fetch order history:", err)
                 setOrders([])
@@ -76,7 +83,6 @@ const HistoryPage = () => {
 
     return (
         <div className="max-w-2xl mx-auto py-8 px-4">
-            {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold" style={{ color: colors.text.primary }}>
@@ -96,10 +102,8 @@ const HistoryPage = () => {
                 </div>
             </div>
 
-            {/* Divider */}
             <div className="mb-6" style={{ height: "1px", backgroundColor: colors.border.light }} />
 
-            {/* Empty state */}
             {loading ? (
                 <div
                     className="flex flex-col items-center justify-center py-20 rounded-xl"

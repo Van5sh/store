@@ -25,7 +25,7 @@ export default function CustomerLayout({
 
     return (
         <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: colors.background.app }}>
-            <div className={`justify-center bg-white w-full shadow-md`}>
+            <div className="justify-center w-full shadow-md" style={{ backgroundColor: colors.background.card }}>
                 <TopNavigation items={items}/>
             </div>
             <div className="flex-1 overflow-auto">

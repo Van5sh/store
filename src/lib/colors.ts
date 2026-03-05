@@ -2,67 +2,67 @@
 
 export const colors = {
   stone: {
-    50:  "#FAFAF9",
-    100: "#F5F5F4",
-    200: "#E7E5E4",
-    300: "#D6D3D1",
-    400: "#A8A29E",
-    500: "#78716C",
-    600: "#57534E", // Brand Stone
-    700: "#44403C",
-    800: "#292524",
-    900: "#1C1917",
+    50:  "#F7F9F6",
+    100: "#EEF2ED",
+    200: "#E5ECE6",
+    300: "#D7E1DA",
+    400: "#C7D2CB",
+    500: "#B4C1B9",
+    600: "#9EAEA4", // Brand Sage
+    700: "#7F9286",
+    800: "#5F6F66",
+    900: "#3F4C45",
   },
 
   amber: {
-    50:  "#FFFBEB",
-    100: "#FEF3C7",
-    200: "#FDE68A",
-    300: "#FCD34D",
-    400: "#FBBF24",
-    500: "#F59E0B", // Accent
-    600: "#D97706",
-    700: "#B45309",
-    800: "#92400E",
-    900: "#78350F",
+    50:  "#EDF4F0",
+    100: "#DDE8E1",
+    200: "#C5D7CC",
+    300: "#A9C3B4",
+    400: "#8BA89B",
+    500: "#6F8F81", // Accent
+    600: "#5C776B",
+    700: "#4A5F55",
+    800: "#394742",
+    900: "#2A3532",
   },
 
   neutral: {
-    50:  "#FAFAFA",
-    100: "#F4F4F5",
-    200: "#E4E4E7",
-    300: "#D4D4D8",
-    400: "#A1A1AA",
-    500: "#71717A",
-    600: "#52525B",
-    700: "#3F3F46",
-    800: "#27272A",
-    900: "#18181B",
+    50:  "#F6F7F7",
+    100: "#ECEFEE",
+    200: "#DCE2E0",
+    300: "#C6CFCC",
+    400: "#A9B6B0",
+    500: "#8C9A92",
+    600: "#6F7D75",
+    700: "#55615B",
+    800: "#3D4742",
+    900: "#28302B",
   },
 
-  white: "#FFFFFF",
+  white: "#F2F4F7",
   black: "#000000",
 
   background: {
-    app: "#FAFAF9",     // warm off-white
-    card: "#FFFFFF",
-    muted: "#F5F5F4",
-    accent: "#FFFBEB",
+    app: "#F2F4F1",
+    card: "#F7F9F6",
+    muted: "#E5ECE6",
+    accent: "#D7E1DA",
   },
 
   text: {
-    primary: "#1C1917",
-    secondary: "#44403C",
-    muted: "#78716C",
-    inverse: "#FFFFFF",
-    accent: "#92400E",
+    primary: "#28302B",
+    secondary: "#4A5F55",
+    muted: "#6F8F81",
+    inverse: "#F2F4F1",
+    accent: "#5C776B",
   },
 
   border: {
-    light: "#E7E5E4",
-    soft: "#D6D3D1",
-    accent: "#FDE68A",
-    focus: "#D97706",
+    light: "#D7E1DA",
+    soft: "#C7D2CB",
+    accent: "#8BA89B",
+    focus: "#5C776B",
   },
 } as const;
 
