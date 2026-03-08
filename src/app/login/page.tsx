@@ -77,7 +77,6 @@ export default function LoginPage() {
                       required
                   />
                 </div>
-
                 <div className="grid gap-2">
                   <Label>Password</Label>
                   <Input
@@ -87,8 +86,6 @@ export default function LoginPage() {
                       required
                   />
                 </div>
-
-                {/* Signup-only role selector */}
                 {isSignup && (
                     <div className="grid gap-2">
                       <Label>Email</Label>
