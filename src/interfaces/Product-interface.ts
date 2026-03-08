@@ -20,6 +20,7 @@ interface CreateProduct {
     warehouseId:string;
     quantity:number;
     productCategory:ProductCategory;
+    file:File;
 }
 
 export type { CreateProduct };
