@@ -34,7 +34,7 @@ type AuthResponse = {
 
 type AuthContextType = {
   isAuthenticated: boolean
-  user: UserData | null
+  user: UserData
   accessToken: string | null
   login: (payload: LoginInput) => Promise<AuthResponse>
   signup: (payload: SignupInput) => Promise<AuthResponse>
@@ -44,9 +44,17 @@ type AuthContextType = {
 const STORAGE_USER_KEY = "auth_user"
 const STORAGE_TOKEN_KEY = "auth_token"
 
+const DEFAULT_USER: UserData = {
+  id: "",
+  role: "",
+  email: "",
+  name: "",
+  userName: "",
+}
+
 const AuthContext = React.createContext<AuthContextType>({
   isAuthenticated: false,
-  user: null,
+  user: DEFAULT_USER,
   accessToken: null,
   login: async () => {
     throw new Error("AuthContext not ready")
@@ -58,7 +66,7 @@ const AuthContext = React.createContext<AuthContextType>({
 })
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = React.useState<UserData | null>(null)
+  const [user, setUser] = React.useState<UserData>(DEFAULT_USER)
   const [accessToken, setAccessToken] = React.useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = React.useState(false)
 
@@ -84,6 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const cacheAuth = React.useCallback(({ user, accessToken }: AuthPayload) => {
     setUser(user)
     setIsAuthenticated(true)
+
     localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(user))
 
     if (accessToken) {
@@ -97,6 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!data?.user || !data?.role) {
         throw new Error("Invalid auth response")
       }
+
       cacheAuth({ user: data.user, accessToken: data.access_token })
       return data
     },
@@ -110,11 +120,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
-      console.log("Login response status:", res)
+
       const data = await res.json()
+
       if (!res.ok) {
         throw new Error(data?.message ?? "Login failed")
       }
+
       return handleAuthResponse(data)
     },
     [handleAuthResponse]
@@ -129,6 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       const data = await res.json()
+
       if (!res.ok) {
         throw new Error(data?.message ?? "Signup failed")
       }
@@ -139,9 +152,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   )
 
   const logout = React.useCallback(() => {
-    setUser(null)
+    setUser(DEFAULT_USER)
     setAccessToken(null)
     setIsAuthenticated(false)
+
     localStorage.removeItem(STORAGE_USER_KEY)
     localStorage.removeItem(STORAGE_TOKEN_KEY)
   }, [])

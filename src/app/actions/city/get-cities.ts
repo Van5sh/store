@@ -14,7 +14,7 @@ interface City {
 
 async function getCities(): Promise<City[]> {
   try {
-    const res = await fetch(`${process.env.BACKEND_URL}city`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/city`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

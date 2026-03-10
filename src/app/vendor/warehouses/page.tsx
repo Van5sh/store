@@ -36,8 +36,6 @@ const WarehouseVendorPage = () => {
   const [cities, setCities] = useState<City[]>([])
 
   const [loading, setLoading] = useState(false)
-
-  // fetch cities
   useEffect(() => {
     async function loadCities() {
       try {
@@ -59,7 +57,7 @@ const WarehouseVendorPage = () => {
         warehouseName,
         warehouseCapacity: Number(capacity),
         city,
-        userID: user?.id ?? "",
+        userID: user.id,
       }
 
       const res = await createWarehouse(payload)
@@ -80,8 +78,7 @@ const WarehouseVendorPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      
-      {/* Header */}
+
       <div className="p-4">
         <h1 className="text-2xl font-bold mb-2">Warehouse Management</h1>
 
@@ -90,7 +87,6 @@ const WarehouseVendorPage = () => {
         </p>
       </div>
 
-      {/* Empty state */}
       <div className="flex flex-1 flex-col justify-center items-center text-center gap-4">
 
         <Image
@@ -112,7 +108,6 @@ const WarehouseVendorPage = () => {
           + Create Your Warehouse
         </Button>
 
-        {/* Modal */}
         <Modal
           title="NEW WAREHOUSE"
           isOpen={openModal}
@@ -120,7 +115,6 @@ const WarehouseVendorPage = () => {
         >
           <div className="flex flex-col gap-4">
 
-            {/* Warehouse Name */}
             <div>
               <span>Warehouse Name</span>
               <Input
@@ -129,7 +123,6 @@ const WarehouseVendorPage = () => {
               />
             </div>
 
-            {/* Capacity */}
             <div>
               <span>Warehouse Capacity</span>
               <Input
@@ -139,7 +132,6 @@ const WarehouseVendorPage = () => {
               />
             </div>
 
-            {/* City Select */}
             <div>
               <span>City</span>
 
@@ -151,7 +143,7 @@ const WarehouseVendorPage = () => {
 
                 <SelectContent>
                   {cities.map((city) => (
-                    <SelectItem key={city.id} value={city.id}>
+                    <SelectItem key={city.id} value={city.name}>
                       {city.name}
                     </SelectItem>
                   ))}

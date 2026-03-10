@@ -1,22 +1,19 @@
-import axios, { AxiosError } from 'axios';
+import axios from "axios"
 
 export const apiHandler = axios.create({
-    baseURL: process.env.BACKEND_URL,
-    headers:{
-        'Content-Type':'application/json'
-    },
-    withCredentials:true,
-    timeout:5000
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  timeout: 5000,
 })
 
-apiHandler.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError) => {
-    const status = error.response?.status;
-    if (status === 401) {
-      console.error('Unauthorized');
-    }
+apiHandler.interceptors.request.use((config) => {
+  const token = localStorage.getItem("auth_token")
 
-    return Promise.reject(error);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
   }
-);
+
+  return config
+})
