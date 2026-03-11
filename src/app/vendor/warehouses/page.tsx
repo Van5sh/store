@@ -88,8 +88,15 @@ const WarehouseVendorPage = () => {
     <div className="flex flex-col min-h-screen">
 
       <div className="p-4">
+        <div className="flex flex-row justify-between items-center">
         <h1 className="text-2xl font-bold mb-2">Warehouse Management</h1>
-
+          <Button
+            onClick={() => setOpenModal(true)}
+            className="bg-[#196da7] hover:bg-[#176db6]"
+          >
+            + Create Your Warehouse
+          </Button>
+        </div>
         <p className="text-sm text-[#5B6770] dark:text-[#D8DEE5]">
           Manage your warehouse inventory and settings.
         </p>
@@ -124,13 +131,6 @@ const WarehouseVendorPage = () => {
             <p className="text-gray-500 italic">
               You don't have any listed warehouses right now
             </p>
-
-            <Button
-              onClick={() => setOpenModal(true)}
-              className="bg-[#196da7] hover:bg-[#176db6]"
-            >
-              + Create Your Warehouse
-            </Button>
           </div>
         )}
         <Modal
