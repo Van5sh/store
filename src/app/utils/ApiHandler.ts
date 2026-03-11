@@ -4,6 +4,8 @@ export const apiHandler = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
   headers: {
     "Content-Type": "application/json",
+    // // Avoid ngrok browser warning HTML being returned to XHR/fetch
+    // "ngrok-skip-browser-warning": "true",
   },
   timeout: 5000,
 })

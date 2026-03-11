@@ -23,6 +23,23 @@ export async function createWarehouse(data: createWarehouseType) {
       },
     }
   )
+  return res.data
+}
 
+export async function getWarehouses(){
+  const user=localStorage.getItem("auth_user")
+  if (!user) {
+    throw new Error("User not found")
+  }
+  const userData=JSON.parse(user)
+  if (!userData.id) {
+    throw new Error("User ID not found")
+  }
+  const id=userData.id
+  const res=await apiHandler.get(`/warehouse/${id}`,{
+    headers:{
+      Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+    }
+  })
   return res.data
 }
