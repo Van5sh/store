@@ -33,7 +33,9 @@ export default function LoginPage() {
       const data = isSignup
         ? await signup({ userName, password, email, role })
         : await login({ userName, password })
-      router.push(`/${data.role}`)
+      if (data?.role) {
+        router.replace(`/${data.role}`)
+      }
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Authentication failed"

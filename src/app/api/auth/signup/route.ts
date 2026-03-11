@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
 
         response.cookies.set("role", role, {
             httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
             path: "/",
         })
