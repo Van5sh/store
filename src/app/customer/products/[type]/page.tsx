@@ -4,6 +4,7 @@ import ProductsCard from "@/components/customer-ui/products-card"
 import React from "react"
 import { colors } from "@/lib/colors"
 import { useParams } from "next/navigation"
+import { getProductType } from "@/app/actions/product/get-product-type"
 
 interface ProductProps {
   id: string
@@ -40,17 +41,7 @@ export default function ProductsPage() {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetch(
-          `/api/product/getproductType?type=${encodeURIComponent(type)}`,
-          { method: "GET" }
-        )
-        const contentType = res.headers.get("content-type") ?? ""
-        const data = contentType.includes("application/json")
-          ? await res.json()
-          : null
-        if (!res.ok) {
-          throw new Error(data?.message ?? "Failed to fetch products")
-        }
+        const data = await getProductType({ type })
 
         const list = Array.isArray(data)
           ? data

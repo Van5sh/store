@@ -137,9 +137,6 @@ const WarehouseVendorPage = () => {
                 >
                   + Create Warehouse
                 </Button>
-                <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                  Live Network
-                </div>
               </div>
             </div>
 

@@ -3,6 +3,7 @@ import React from "react"
 import { colors } from "@/lib/colors"
 import { PackageSearch, Package, Clock, CheckCircle2, XCircle, Loader2 } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
+import { getOrderHistory } from "@/app/actions/orders/get-order-history"
 
 interface Order {
     orderId: string,
@@ -41,23 +42,10 @@ const HistoryPage = () => {
                 }
                 setLoading(true)
                 setError(null)
-                const res = await fetch(
-                    `/api/orders/history?userId=${encodeURIComponent(user.id)}&status=pending,processing,shipped,delivered,cancelled`
-                )
-                const contentType = res.headers.get("content-type") ?? ""
-                const data = contentType.includes("application/json")
-                    ? await res.json()
-                    : null
-                if (!res.ok) {
-                    const fallback = contentType.includes("text")
-                        ? await res.text()
-                        : ""
-                    const message =
-                        data?.message ??
-                        (fallback ? fallback.slice(0, 200) : "") ??
-                        `Failed to fetch order history (status ${res.status})`
-                    throw new Error(message)
-                }
+                const data = await getOrderHistory({
+                    userId: user.id,
+                    status: "pending,processing,shipped,delivered,cancelled",
+                })
                 const list = Array.isArray(data?.orders)
                     ? data.orders
                     : Array.isArray(data)

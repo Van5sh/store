@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Modal from "@/components/vendor-ui/Modal";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateProduct, ProductCategory } from "@/interfaces/Product-interface";
+import { getWarehouses } from "@/app/actions/warehouse/actions";
+import { WarehouseData } from "@/interfaces/warehouse";
 
 const VendorProductsPage = () => {
     const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -13,6 +15,7 @@ const VendorProductsPage = () => {
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
     const [selectedWarehouse, setSelectedWarehouse] = useState<string>("");
+    const [warehouses, setWarehouses] = useState<WarehouseData[]>([])
     const [productData,setProductData]=useState<CreateProduct>({
         productName:"",
         productPrice:0,
@@ -23,6 +26,21 @@ const VendorProductsPage = () => {
         productCategory:ProductCategory.Electronics,
         file:new File([], "")
     })
+    useEffect(()=>{
+        const user=localStorage.getItem("auth_user")
+        if (user) {
+            const userData=JSON.parse(user)
+            setProductData((prev)=>({
+                ...prev,
+                vendorId:userData.id
+            }))
+        }
+        const fetchWarehouses=async()=>{
+            const warehouses=await getWarehouses()
+            setWarehouses(warehouses)
+        }
+        fetchWarehouses()
+    },[])
     return (
         <div className="flex">
             <Button
@@ -107,8 +125,11 @@ const VendorProductsPage = () => {
                                         <SelectValue placeholder="Select Warehouse" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="warehouse1">Warehouse 1</SelectItem>
-                                        <SelectItem value="warehouse2">Warehouse 2</SelectItem>
+                                        {warehouses.map((warehouse) => (
+                                            <SelectItem key={warehouse.warehouseId} value={warehouse.warehouseId}>
+                                                {warehouse.warehouseName}
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </div>

@@ -5,6 +5,7 @@ import CarouselSize from "@/components/customer-ui/itemtype-carousel"
 import { colors } from "@/lib/colors"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthContext"
+import { getOrderHistory } from "@/app/actions/orders/get-order-history"
 
 const greeting = [
     "Hello, valued customer!",
@@ -51,19 +52,10 @@ const CustomerPage = () => {
                     setOrdersError("Please sign in to view your orders.")
                     return
                 }
-                const res = await fetch(
-                    `/api/orders/history?userId=${encodeURIComponent(user.id)}&status=pending,shipped,delivered,cancelled`,
-                    { method: "GET" }
-                )
-                const contentType = res.headers.get("content-type") ?? ""
-                const data = contentType.includes("application/json")
-                    ? await res.json()
-                    : null
-                if (!res.ok) {
-                    throw new Error(
-                        data?.message ?? "Failed to fetch orders"
-                    )
-                }
+                const data = await getOrderHistory({
+                    userId: user.id,
+                    status: "pending,shipped,delivered,cancelled",
+                })
 
                 const list = Array.isArray(data?.orders)
                     ? data.orders

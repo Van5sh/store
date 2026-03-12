@@ -32,7 +32,7 @@ const ProductsCard: React.FC<ProductProps> = ({ id, name, price, type, img }) =>
         }
         try {
             setOrdering(true)
-            const { createOrder } = await import("@/app/customer/products/[type]/actions")
+            const { createOrder } = await import("@/app/actions/orders/create-order")
             await createOrder({ productId: id, quantity: 1, userId: user.id })
             alert("Order placed successfully")
         } catch (err) {

@@ -1,5 +1,7 @@
 "use client"
 import React from "react"
+import { login as loginAction } from "@/app/actions/auth/login"
+import { signup as signupAction } from "@/app/actions/auth/signup"
 
 type UserData = {
   id: string
@@ -115,20 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = React.useCallback(
     async (payload: LoginInput) => {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data?.message ?? "Login failed")
-      }
-
+      const data = await loginAction(payload)
       return handleAuthResponse(data)
     },
     [handleAuthResponse]
@@ -136,18 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signup = React.useCallback(
     async (payload: SignupInput) => {
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data?.message ?? "Signup failed")
-      }
-
+      const data = await signupAction(payload)
       return handleAuthResponse(data)
     },
     [handleAuthResponse]
