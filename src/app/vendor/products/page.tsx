@@ -37,7 +37,7 @@ const VendorProductsPage = () => {
         }
         const fetchWarehouses=async()=>{
             const warehouses=await getWarehouses()
-            setWarehouses(warehouses)
+            setWarehouses(warehouses.data)
         }
         fetchWarehouses()
     },[])
