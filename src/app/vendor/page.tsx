@@ -27,6 +27,12 @@ const VendorPage = () => {
             icon: Warehouse,
             route:"/vendor/warehouses"
         },
+        {
+            name:"Store Management",
+            description:"View and manage your orders, track shipments, and handle returns.",
+            icon: BaggageClaim,
+            route:"/vendor/stores"
+        }
     ]
 
     return (
@@ -38,7 +44,7 @@ const VendorPage = () => {
                 </div>
             </div>
 
-            <div className="mt-6 flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
+            <div className="mt-6 flex  grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
                 <section className="min-h-0">
                     <Card className="border-[#D8DEE5] bg-[#F5F7FA] text-[#203A43] dark:border-[#254757] dark:bg-[#203A43] dark:text-[#F5F7FA]">
                         <CardHeader className="pb-2">
@@ -73,7 +79,7 @@ const VendorPage = () => {
                             </div>
                         </CardContent>
                     </Card>
-                    <div className="flex flex-row mt-6 gap-5 font-semibold text-[#203A43] dark:text-[#F5F7FA]">
+                    <div className="flex grid grid-cols-2 flex-row mt-6 gap-5 font-semibold text-[#203A43] dark:text-[#F5F7FA]">
                         {
                             services.map((service)=>{
                                 return (
