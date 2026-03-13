@@ -31,7 +31,7 @@ const VendorPage = () => {
             name:"Store Management",
             description:"View and manage your orders, track shipments, and handle returns.",
             icon: BaggageClaim,
-            route:"/vendor/stores"
+            route:"/vendor/store"
         }
     ]
 
