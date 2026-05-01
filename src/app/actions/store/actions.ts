@@ -8,8 +8,7 @@ export async function createStore(storeData:CreateStoreData){
         }
         const response=await apiHandler.post("/store/create",storeData,{
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${localStorage.getItem("token")}`
+                "Authorization": `Bearer ${localStorage.getItem("auth_token")}`
             }
         });
         if (response.status !== 201) {
@@ -17,6 +16,27 @@ export async function createStore(storeData:CreateStoreData){
         }
         return response.data;
     }catch (error) {
-        throw new Error("Failed to create store");
+        const message = error instanceof Error ? error.message : "Failed to create store"
+        throw new Error(message);
     }
+}
+
+export type VendorStore = {
+    storeId: string
+    storeName: string
+    cityName: string
+    vendorId: string
+}
+
+export async function getVendorStores(vendorId: string): Promise<VendorStore[]> {
+    if (!vendorId) throw new Error("Missing vendorId")
+
+    const res = await apiHandler.get("/store", {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
+    })
+
+    const stores = (res.data ?? []) as VendorStore[]
+    return Array.isArray(stores) ? stores.filter((s) => s?.vendorId === vendorId) : []
 }

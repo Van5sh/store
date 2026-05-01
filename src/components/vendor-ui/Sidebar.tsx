@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SidebarProps {
     activeTab?: string;
@@ -33,6 +35,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     const [showUserMenu, setShowUserMenu] = useState(false);
 
     const userMenuRef = useRef<HTMLDivElement | null>(null);
+    const router = useRouter();
+    const { logout } = useAuth();
 
     const menuItems = [
         { icon: LayoutDashboard, label: "Home", link: "/vendor" },
@@ -63,6 +67,14 @@ const Sidebar: React.FC<SidebarProps> = ({
         return () =>
             document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    const handleLogout = () => {
+        logout();
+        localStorage.removeItem("vendor_stores");
+        localStorage.removeItem("active_store_id");
+        setShowUserMenu(false);
+        router.replace("/");
+    };
 
     return (
         <aside
@@ -168,6 +180,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             <div className="border-t border-[#D8DEE5] dark:border-[#254757] my-1" />
 
                             <button
+                                onClick={handleLogout}
                                 className="
                                 w-full flex items-center gap-3 p-2 rounded-lg text-left
                                 hover:bg-[#FCEEEE] dark:hover:bg-[#3A1B1B]

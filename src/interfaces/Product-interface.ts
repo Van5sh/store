@@ -1,15 +1,10 @@
 export enum ProductCategory {
-    Electronics = "Electronics",
-    Clothing = "Clothing",
-    HomeAppliances = "Home Appliances",
-    Books = "Books",
-    Beauty = "Beauty",
-    Sports = "Sports",
-    Toys = "Toys",
-    Furniture = "Furniture",
-    Automotive = "Automotive",
-    Grocery = "Grocery",
-    Health = "Health"
+    electronics = "electronics",
+    clothing = "clothing",
+    home_appliances = "home_appliances",
+    books = "books",
+    toys = "toys",
+    sports = "sports",
 }
 
 interface CreateProduct {
@@ -20,7 +15,7 @@ interface CreateProduct {
     warehouseId:string;
     quantity:number;
     productCategory:ProductCategory;
-    file:File;
+    file:File | null;
 }
 
 export type { CreateProduct };

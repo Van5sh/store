@@ -3,7 +3,7 @@ import axios from "axios"
 export const apiHandler = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
   headers: {
-    "Content-Type": "application/json",
+    Accept: "application/json",
     // // Avoid ngrok browser warning HTML being returned to XHR/fetch
     // "ngrok-skip-browser-warning": "true",
   },

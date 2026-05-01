@@ -16,16 +16,32 @@ import {
 import { City } from "@/interfaces/city";
 import getCities from "@/app/actions/city/get-cities";
 import { useAuth } from "@/contexts/AuthContext";
-import { createStore } from "@/app/actions/store/actions";
+import { createStore, getVendorStores } from "@/app/actions/store/actions";
 
 interface Store {
+  storeId?: string;
   storeName: string;
   cityName: string;
 }
 
 const StorePage = () => {
-  const [stores, setStores] = useState<Store[]>([]);
+  const [stores, setStores] = useState<Store[]>(() => {
+    if (typeof window === "undefined") return [];
+    const storedStores = localStorage.getItem("vendor_stores");
+    if (!storedStores) return [];
+    try {
+      const parsed = JSON.parse(storedStores) as Store[];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      localStorage.removeItem("vendor_stores");
+      return [];
+    }
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeStoreId, setActiveStoreId] = useState<string>(() => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("active_store_id") ?? "";
+  });
 
   const [storeData, setStoreData] = useState<Store>({
     storeName: "",
@@ -50,15 +66,58 @@ const StorePage = () => {
     fetchCities();
   }, []);
 
+  useEffect(() => {
+    if (!user?.id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const remoteStores = await getVendorStores(user.id);
+        if (cancelled) return;
+        const mapped: Store[] = remoteStores.map((s) => ({
+          storeId: s.storeId,
+          storeName: s.storeName,
+          cityName: s.cityName,
+        }));
+        setStores(mapped);
+        localStorage.setItem("vendor_stores", JSON.stringify(mapped));
+        if (!activeStoreId && mapped[0]?.storeId) {
+          localStorage.setItem("active_store_id", mapped[0].storeId);
+          setActiveStoreId(mapped[0].storeId);
+        }
+      } catch (e) {
+        console.error("Failed to fetch stores", e);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id, activeStoreId]);
+
   const handleCreateStore = async() => {
     if (!storeData.storeName || !storeData.cityName) return;
 
-    setStores((prev) => [...prev, storeData]);
-    await createStore({
+    const created = await createStore({
       storeName: storeData.storeName,
       cityName: storeData.cityName,
       vendorId: user?.id,
     });
+
+    const createdStore: Store = {
+      storeId: created?.storeId ?? created?.id,
+      storeName: storeData.storeName,
+      cityName: storeData.cityName,
+    };
+
+    setStores((prev) => {
+      const next = [...prev, createdStore];
+      localStorage.setItem("vendor_stores", JSON.stringify(next));
+      if (!activeStoreId && createdStore.storeId) {
+        localStorage.setItem("active_store_id", createdStore.storeId);
+        setActiveStoreId(createdStore.storeId);
+      }
+      return next;
+    });
+
     setStoreData({
       storeName: "",
       cityName: "",
@@ -102,9 +161,17 @@ const StorePage = () => {
               <p className="text-sm text-gray-500 mt-2">
                 City: {store.cityName}
               </p>
-
-              <Button variant="outline" className="mt-4 w-full">
-                Manage Store
+              <Button
+                variant={store.storeId && store.storeId === activeStoreId ? "default" : "outline"}
+                className="mt-4 w-full"
+                onClick={() => {
+                  if (!store.storeId) return;
+                  localStorage.setItem("active_store_id", store.storeId);
+                  setActiveStoreId(store.storeId);
+                }}
+                disabled={!store.storeId}
+              >
+                {store.storeId && store.storeId === activeStoreId ? "Active Store" : "Set Active"}
               </Button>
             </div>
           ))}

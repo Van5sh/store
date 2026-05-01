@@ -19,6 +19,9 @@ export interface ProductCreate {
 
 
 export async function createProduct(data:CreateProduct) {
+    if (!data?.file) {
+        throw new Error("Product image is required")
+    }
     const formData = new FormData();
     formData.append("productName", data.productName);
     formData.append("productPrice", data.productPrice.toString());
