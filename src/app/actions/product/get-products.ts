@@ -74,3 +74,17 @@ export async function getProductInventory(productId: string): Promise<ProductInv
   })
   return (res.data ?? []) as ProductInventoryItem[]
 }
+
+export async function getProductsByStoreId(
+    storeId: string
+): Promise<ProductItem[]> {
+  if (!storeId) throw new Error("Missing storeId")
+
+  const res = await apiHandler.get(`/products/store/${storeId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+    },
+  })
+
+  return (res.data ?? []) as ProductItem[]
+}

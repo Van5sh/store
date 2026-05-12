@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Warehouse, BaggageClaim } from 'lucide-react';
+import { Warehouse, BaggageClaim, Store } from 'lucide-react';
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 
@@ -29,8 +29,8 @@ const VendorPage = () => {
         },
         {
             name:"Store Management",
-            description:"View and manage your orders, track shipments, and handle returns.",
-            icon: BaggageClaim,
+            description:"View and manage your store and product listings.",
+            icon: Store,
             route:"/vendor/store"
         }
     ]

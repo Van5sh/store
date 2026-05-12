@@ -203,7 +203,6 @@ const VendorProductsPage = () => {
           </button>
         </div>
 
-        {/* Summary Stats */}
         {products.length > 0 && (
           <div className="grid grid-cols-3 gap-4 mb-8">
             {[
@@ -219,7 +218,6 @@ const VendorProductsPage = () => {
           </div>
         )}
 
-        {/* Error Banner */}
         {error && (
           <div className="flex items-center gap-3 px-4 py-3 mb-6 bg-red-50 border border-red-100 rounded-xl text-sm text-red-700">
             <AlertCircle size={16} className="shrink-0" />
@@ -230,7 +228,6 @@ const VendorProductsPage = () => {
           </div>
         )}
 
-        {/* Product Grid */}
         {loadingProducts ? (
           <div className="grid grid-cols-3 gap-5">
             {[...Array(6)].map((_, i) => (
@@ -430,7 +427,6 @@ const VendorProductsPage = () => {
             </div>
           </div>
 
-          {/* Error */}
           {error && (
             <div className="flex items-center gap-2 mt-4 px-3 py-2.5 bg-red-50 border border-red-100 rounded-xl text-sm text-red-600">
               <AlertCircle size={14} className="shrink-0" />
@@ -438,7 +434,6 @@ const VendorProductsPage = () => {
             </div>
           )}
 
-          {/* Actions */}
           <div className="flex gap-3 mt-6">
             <button
               onClick={closeModal}
