@@ -41,7 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     const menuItems = [
         { icon: LayoutDashboard, label: "Home", link: "/vendor" },
         { icon: Users, label: "Products", link: "/vendor/products" },
-        { icon: Users, label: "Warehouse", link: "/vendor/warehouse" },
+        { icon: Users, label: "Warehouse", link: "/vendor/warehouses" },
         { icon: Settings, label: "Stores", link: "/vendor/store" },
         { icon: FileText, label: "Orders", link: "/vendor/orders" },
         { icon: FileText, label: "Activity", link: "/vendor/activity" }

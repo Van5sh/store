@@ -16,18 +16,18 @@ export async function createWarehouse(data: createWarehouseType) {
     }
 
     const res = await apiHandler.post(
-        "/warehouse",
-        {
-          userID: data.userID,
-          warehouseCapacity: data.warehouseCapacity,
-          warehouseName: data.warehouseName,
-          cityName: data.city,
+      "/warehouse",
+      {
+        userID: data.userID,
+        warehouseCapacity: data.warehouseCapacity,
+        warehouseName: data.warehouseName,
+        cityName: data.city,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      }
     )
 
     console.log("✅ Warehouse created:", res.data)
@@ -35,10 +35,10 @@ export async function createWarehouse(data: createWarehouseType) {
     return res.data
   } catch (error: any) {
     const message =
-        error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error?.message ||
-        "Failed to create warehouse"
+      error?.response?.data?.message ||
+      error?.response?.data?.error ||
+      error?.message ||
+      "Failed to create warehouse"
 
     console.error("❌ createWarehouse error:", message)
 
@@ -80,17 +80,17 @@ export async function getWarehouses() {
       },
     })
 
-    console.log("✅ Warehouses fetched:", res.data)
+    console.log("Warehouses fetched:", res.data)
 
     return res.data
   } catch (error: any) {
     const message =
-        error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error?.message ||
-        "Failed to fetch warehouses"
+      error?.response?.data?.message ||
+      error?.response?.data?.error ||
+      error?.message ||
+      "Failed to fetch warehouses"
 
-    console.error("❌ getWarehouses error:", message)
+    console.error("getWarehouses error:", message)
 
     throw new Error(message)
   }

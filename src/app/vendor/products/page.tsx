@@ -14,6 +14,7 @@ import {
 import { CreateProduct, ProductCategory } from "@/interfaces/Product-interface"
 import { getWarehouses } from "@/app/actions/warehouse/actions"
 import { WarehouseData } from "@/interfaces/warehouse"
+import { getVendorStores, VendorStore } from "@/app/actions/store/actions"
 import { createProduct } from "@/app/actions/product/create-product"
 import Image from "next/image"
 import {
@@ -45,6 +46,7 @@ const VendorProductsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [step, setStep] = useState(1)
   const [warehouses, setWarehouses] = useState<WarehouseData[]>([])
+  const [stores, setStores] = useState<VendorStore[]>([])
   const [products, setProducts] = useState<ProductItem[]>([])
   const [loadingProducts, setLoadingProducts] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -79,7 +81,19 @@ const VendorProductsPage = () => {
       const res = await getWarehouses()
       setWarehouses(res.data)
     }
+    const fetchStores = async () => {
+      const vendorId = getVendorId()
+      if (vendorId) {
+        try {
+          const res = await getVendorStores(vendorId)
+          setStores(res)
+        } catch (e) {
+          console.error("Failed to fetch stores", e)
+        }
+      }
+    }
     fetchWarehouses()
+    fetchStores()
   }, [])
 
   const fetchProducts = React.useCallback(async () => {
@@ -187,7 +201,6 @@ const VendorProductsPage = () => {
     <div className="min-h-screen bg-gray-50/50">
       <div className="max-w-6xl mx-auto px-6 py-8">
 
-        {/* Header */}
         <div className="flex items-start justify-between mb-8">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Products</h1>
@@ -309,8 +322,8 @@ const VendorProductsPage = () => {
                         ${meta.quantity > 10
                           ? "bg-green-50 text-green-700"
                           : meta.quantity > 0
-                          ? "bg-amber-50 text-amber-700"
-                          : "bg-red-50 text-red-600"}`}>
+                            ? "bg-amber-50 text-amber-700"
+                            : "bg-red-50 text-red-600"}`}>
                         {meta.quantity} in stock
                       </span>
                     </div>
@@ -390,21 +403,42 @@ const VendorProductsPage = () => {
               </div>
             </div>
 
-            <div>
-              <label className="text-xs font-medium text-gray-500 mb-1.5 block">Category</label>
-              <Select
-                value={productData.productCategory}
-                onValueChange={(v) => setProductData((prev) => ({ ...prev, productCategory: v as ProductCategory }))}
-              >
-                <SelectTrigger className="rounded-xl border-gray-200 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(PRODUCT_CATEGORY_LABEL).map(([val, label]) => (
-                    <SelectItem key={val} value={val}>{label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <label className="text-xs font-medium text-gray-500 mb-1.5 block">Store</label>
+                <Select
+                  value={productData.storeId}
+                  onValueChange={(v) => setProductData((prev) => ({ ...prev, storeId: v }))}
+                >
+                  <SelectTrigger className="rounded-xl border-gray-200 text-sm">
+                    <SelectValue placeholder="Select a store" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {stores.map((s) => (
+                      <SelectItem key={s.storeId} value={s.storeId}>
+                        {s.storeName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex-1">
+                <label className="text-xs font-medium text-gray-500 mb-1.5 block">Category</label>
+                <Select
+                  value={productData.productCategory}
+                  onValueChange={(v) => setProductData((prev) => ({ ...prev, productCategory: v as ProductCategory }))}
+                >
+                  <SelectTrigger className="rounded-xl border-gray-200 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(PRODUCT_CATEGORY_LABEL).map(([val, label]) => (
+                      <SelectItem key={val} value={val}>{label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div>
