@@ -129,12 +129,12 @@ export default function LoginPage() {
                       Password
                     </Label>
                     {!isSignup && (
-                        <button
-                            type="button"
+                        <a
+                            href="mailto:support@example.com?subject=Password%20Reset%20Request"
                             className="text-xs text-gray-400 hover:text-gray-700 transition-colors"
                         >
-                          Forgot password?
-                        </button>
+                          Need help signing in?
+                        </a>
                     )}
                   </div>
                   <div className="relative">
@@ -239,11 +239,11 @@ export default function LoginPage() {
           {/* Footer note */}
           <p className="text-center text-xs text-gray-400 mt-6">
             By continuing you agree to our{" "}
-            <a href="#" className="underline underline-offset-2 hover:text-gray-700 transition-colors">
+            <a href="/customer/support/faq" className="underline underline-offset-2 hover:text-gray-700 transition-colors">
               Terms
             </a>{" "}
             &{" "}
-            <a href="#" className="underline underline-offset-2 hover:text-gray-700 transition-colors">
+            <a href="/customer/support/contact" className="underline underline-offset-2 hover:text-gray-700 transition-colors">
               Privacy Policy
             </a>
           </p>

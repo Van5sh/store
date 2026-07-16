@@ -13,5 +13,5 @@ export interface WarehouseData {
     warehouseCapacity: number
     cityId:string
     city: CityData    
-    warehouseInventory: any[]
+    warehouseInventory: unknown[]
 }

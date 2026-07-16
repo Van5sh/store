@@ -4,6 +4,11 @@ import { cookies } from "next/headers"
 import { AxiosError } from "axios"
 import { apiHandler } from "@/app/utils/ApiHandler"
 
+type ApiErrorResponse = {
+  message?: string
+  error?: string
+}
+
 type CreateOrderInput = {
   productId: string
   quantity: number
@@ -25,8 +30,8 @@ export async function createOrder(payload: CreateOrderInput) {
       }
     )
     return res.data
-  } catch (error: any) {
-    const err = error as AxiosError<any>
+  } catch (error) {
+    const err = error as AxiosError<ApiErrorResponse>
     const status = err.response?.status ?? 500
     const data = err.response?.data
     const message =

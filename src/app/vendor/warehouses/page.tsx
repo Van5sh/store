@@ -66,24 +66,23 @@ const WarehouseVendorPage = () => {
       .map((warehouse) => warehouse.city?.cityName)
       .filter((cityName): cityName is string => Boolean(cityName))
   ).size
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const citiesdata = await getCities()
-        setCities(citiesdata)
-        const warehousesResponse = await getWarehouses()
-        console.log("Warehouses:", warehousesResponse)
-        const normalizedWarehouses = Array.isArray(warehousesResponse)
-          ? warehousesResponse
-          : warehousesResponse?.data ?? []
-        setWarehouses(normalizedWarehouses)
-      } catch (error) {
-        console.error("Failed to load cities", error)
-      }
-    }
 
-    fetchData()
+  const fetchData = React.useCallback(async () => {
+    try {
+      const [citiesdata, warehousesResponse] = await Promise.all([
+        getCities(),
+        getWarehouses(),
+      ])
+      setCities(citiesdata)
+      setWarehouses(warehousesResponse)
+    } catch (error) {
+      console.error("Failed to load warehouse data", error)
+    }
   }, [])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const handleSubmit = async () => {
     try {
@@ -99,6 +98,7 @@ const WarehouseVendorPage = () => {
       const res = await createWarehouse(payload)
 
       console.log("Warehouse created:", res)
+      setWarehouses((prev) => [res as WarehouseData, ...prev])
 
       setWarehouseName("")
       setCapacity("")

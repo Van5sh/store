@@ -22,22 +22,29 @@ interface ProductProps {
 const ProductsCard: React.FC<ProductProps> = ({ id, name, price, type, img }) => {
     const [open, setOpen] = React.useState(false)
     const [ordering, setOrdering] = React.useState(false)
+    const [feedback, setFeedback] = React.useState<string | null>(null)
+    const [feedbackType, setFeedbackType] = React.useState<"success" | "error" | null>(null)
     const { user } = useAuth()
 
     const handleOrderNow = async (e: React.MouseEvent) => {
         e.stopPropagation()
         if (!user?.id) {
-            alert("Please login to place an order")
+            setFeedback("Please sign in to place an order.")
+            setFeedbackType("error")
             return
         }
         try {
             setOrdering(true)
+            setFeedback(null)
+            setFeedbackType(null)
             const { createOrder } = await import("@/app/actions/orders/create-order")
             await createOrder({ productId: id, quantity: 1, userId: user.id })
-            alert("Order placed successfully")
+            setFeedback("Order placed successfully.")
+            setFeedbackType("success")
         } catch (err) {
             const message = err instanceof Error ? err.message : "Failed to place order"
-            alert(message)
+            setFeedback(message)
+            setFeedbackType("error")
         } finally {
             setOrdering(false)
         }
@@ -122,6 +129,18 @@ const ProductsCard: React.FC<ProductProps> = ({ id, name, price, type, img }) =>
                         <p className="text-sm mb-6" style={{ color: colors.text.secondary }}>
                             Premium quality, ready to ship.
                         </p>
+                        {feedback ? (
+                            <div
+                                className="mb-4 rounded-lg px-3 py-2 text-sm"
+                                style={{
+                                    backgroundColor: feedbackType === "success" ? colors.background.muted : "#FEF2F2",
+                                    color: feedbackType === "success" ? colors.text.accent : "#B91C1C",
+                                    border: `1px solid ${feedbackType === "success" ? colors.border.light : "#FECACA"}`,
+                                }}
+                            >
+                                {feedback}
+                            </div>
+                        ) : null}
                         <Button
                             className="w-full py-3 text-base font-semibold rounded-lg transition-opacity hover:opacity-90"
                             style={{ backgroundColor: colors.amber[600], color: colors.white }}

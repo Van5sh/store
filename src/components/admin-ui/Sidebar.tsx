@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SidebarProps {
     activeTab?: string;
@@ -33,13 +35,15 @@ const Sidebar: React.FC<SidebarProps> = ({
     const [showUserMenu, setShowUserMenu] = useState(false);
 
     const userMenuRef = useRef<HTMLDivElement | null>(null);
+    const router = useRouter();
+    const { logout } = useAuth();
 
     const menuItems = [
         { icon: LayoutDashboard, label: "Dashboard", link: "/admin/dashboard" },
         { icon: Users, label: "Orders", link: "/admin/orders" },
-        { icon: Users, label: "Warehouse", link: "/admin/warehouse" },
+        { icon: FileText, label: "Warehouse", link: "/admin/warehouse" },
         { icon: Settings, label: "Analytics", link: "/admin/analytics" },
-        { icon: FileText, label: "Activity", link: "/admin/activity" },
+        { icon: LayoutDashboard, label: "Activity", link: "/admin/activity" },
     ];
 
     const handleThemeToggle = () => {
@@ -62,6 +66,14 @@ const Sidebar: React.FC<SidebarProps> = ({
         return () =>
             document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    const handleLogout = () => {
+        logout();
+        localStorage.removeItem("vendor_stores");
+        localStorage.removeItem("active_store_id");
+        setShowUserMenu(false);
+        router.replace("/");
+    };
 
     return (
         <aside
@@ -166,6 +178,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             <div className="border-t dark:border-gray-700 my-1" />
 
                             <button
+                                onClick={handleLogout}
                                 className="
                                 w-full flex items-center gap-3 p-2 rounded-lg text-left
                                 hover:bg-red-50 dark:hover:bg-red-900/20

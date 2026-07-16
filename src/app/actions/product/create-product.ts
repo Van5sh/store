@@ -1,5 +1,6 @@
 import { apiHandler } from "@/app/utils/ApiHandler";
 import { CreateProduct, ProductCategory } from "@/interfaces/Product-interface";
+import { getStoredToken } from "@/lib/auth-storage";
 
 export interface ProductCreate {
   productName: string;
@@ -19,6 +20,10 @@ export interface ProductCreate {
 
 
 export async function createProduct(data:CreateProduct) {
+    const token = getStoredToken()
+    if (!token) {
+        throw new Error("Authentication token missing")
+    }
     if (!data?.file) {
         throw new Error("Product image is required")
     }
@@ -34,7 +39,7 @@ export async function createProduct(data:CreateProduct) {
 
     const res = await apiHandler.post("/products", formData, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem("auth_token")}`
+            Authorization: `Bearer ${token}`
         }
     });
     return res;

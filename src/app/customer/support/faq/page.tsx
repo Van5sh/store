@@ -29,7 +29,7 @@ const FaqSupportPage = () => {
       answer: (
         <span>
           You can reach us at{" "}
-          <a href="mailto:support@example.com" className="text-blue-600 hover:text-blue-800 underline font-medium">
+          <a href="mailto:support@example.com?subject=Storefront%20Support" className="text-blue-600 hover:text-blue-800 underline font-medium">
             support@example.com
           </a>
           {" "}or through the contact form on our website.
@@ -136,13 +136,15 @@ const FaqSupportPage = () => {
                 <Mail className="w-5 h-5" />
                 Email Us
               </a>
-              <button className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-colors"
+              <a
+                href="/customer/support/contact"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-colors"
                 style={{ backgroundColor: colors.amber[500], color: colors.white }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.amber[600]}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.amber[500]}>
                 <MessageCircle className="w-5 h-5" />
                 Live Chat
-              </button>
+              </a>
             </div>
             <div className="mt-6 flex items-center justify-center gap-2 text-sm" style={{ color: colors.stone[200] }}>
               <Clock className="w-4 h-4" />

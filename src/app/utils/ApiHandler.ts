@@ -1,11 +1,13 @@
 import axios from "axios"
 
+const baseURL =
+  process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/+$/, "") ||
+  "http://localhost:5100"
+
 export const apiHandler = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  baseURL,
   headers: {
     Accept: "application/json",
-    // // Avoid ngrok browser warning HTML being returned to XHR/fetch
-    // "ngrok-skip-browser-warning": "true",
   },
   timeout: 5000,
 })

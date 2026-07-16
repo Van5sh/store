@@ -13,6 +13,11 @@ interface ComplaintPayload {
     type?: "relatedToOrder" | "general";
 }
 
+type ApiErrorResponse = {
+    message?: string
+    error?: string
+}
+
 async function newComplaint(payload: ComplaintPayload, type: "order" | "general") {
     const token = (await cookies()).get("access_token")?.value
     const normalizedUserId = payload.userId?.trim()
@@ -39,12 +44,16 @@ async function newComplaint(payload: ComplaintPayload, type: "order" | "general"
         );
         console.log("Complaint submitted successfully:", response);
         return response.data ?? response;
-    } catch (error: any) {
-        const data = error?.response?.data
+    } catch (error: unknown) {
+        const err = error as {
+            response?: { data?: ApiErrorResponse }
+            message?: string
+        }
+        const data = err.response?.data
         const message =
             data?.message ??
             data?.error ??
-            error?.message ??
+            err.message ??
             "Failed to submit complaint"
         throw new Error(message)
     }

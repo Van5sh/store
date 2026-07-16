@@ -21,9 +21,12 @@ const ComplaintPage = () => {
     const [email, setEmail] = React.useState("");
     const [complaintType, setComplaintType] = React.useState<"order" | "general">("order");
     const [orderId, setOrderId] = React.useState("");
+    const [submitting, setSubmitting] = React.useState(false)
+    const [error, setError] = React.useState<string | null>(null)
+    const [success, setSuccess] = React.useState<string | null>(null)
     const handleSubmit = async () => {
         if (!user?.id) {
-            alert("Please sign in before submitting a complaint.");
+            setError("Please sign in before submitting a complaint.")
             return;
         }
         const requiredFields = [email, complaintType];
@@ -31,17 +34,30 @@ const ComplaintPage = () => {
             requiredFields.push(orderId);
         }
         if (requiredFields.some(field => !field)) {
-            alert("Please fill in all required fields.");
+            setError("Please fill in all required fields.")
             return;
         }
-        await newComplaint({
-            title,
-            content: description,
-            deliveryDate: complaintType === "order" ? new Date().toISOString() : undefined,
-            orderId: complaintType === "order" ? orderId.trim() : undefined,
-            userId: user.id,
-            email: email || user?.email || "",
-        }, complaintType);
+        try {
+            setSubmitting(true)
+            setError(null)
+            setSuccess(null)
+            await newComplaint({
+                title,
+                content: description,
+                deliveryDate: complaintType === "order" ? new Date().toISOString() : undefined,
+                orderId: complaintType === "order" ? orderId.trim() : undefined,
+                userId: user.id,
+                email: email || user?.email || "",
+            }, complaintType);
+            setSuccess("Complaint submitted successfully. Our team will review it shortly.")
+            setTitle("")
+            setDescription("")
+            setOrderId("")
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Failed to submit complaint.")
+        } finally {
+            setSubmitting(false)
+        }
     }
 
     React.useEffect(() => {
@@ -65,7 +81,7 @@ const ComplaintPage = () => {
                             Submit a Complaint
                         </h1>
                         <p className="text-sm mt-1" style={{ color: colors.text.secondary }}>
-                            We'll get back to you as soon as possible.
+                            We&apos;ll get back to you as soon as possible.
                         </p>
                     </div>
                     <div
@@ -162,13 +178,25 @@ const ComplaintPage = () => {
 
                     <div style={{ height: "1px", backgroundColor: colors.border.light }} />
 
+                    {success ? (
+                        <div className="rounded-lg border px-4 py-3 text-sm" style={{ borderColor: colors.border.light, color: colors.text.accent }}>
+                            {success}
+                        </div>
+                    ) : null}
+                    {error ? (
+                        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            {error}
+                        </div>
+                    ) : null}
+
                     <Button
                         className="w-full flex items-center justify-center gap-2 font-semibold"
                         onClick={handleSubmit}
+                        disabled={submitting}
                         style={{ backgroundColor: colors.text.accent, color: colors.text.inverse }}
                     >
                         <Send size={15} />
-                        Submit Complaint
+                        {submitting ? "Submitting..." : "Submit Complaint"}
                     </Button>
                 </div>
 

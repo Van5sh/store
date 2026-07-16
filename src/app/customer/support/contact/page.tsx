@@ -11,11 +11,17 @@ const ContactPage = () => {
     subject: '',
     message: ''
   });
+  const [submitted, setSubmitted] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Handle form submission
+    e.preventDefault()
+    const mailtoUrl = `mailto:support@example.com?subject=${encodeURIComponent(
+      formData.subject || `Support request from ${formData.name}`
+    )}&body=${encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`
+    )}`
+    window.location.href = mailtoUrl
+    setSubmitted(true)
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -33,7 +39,7 @@ const ContactPage = () => {
             Contact Us
           </h1>
           <p className="text-lg" style={{ color: colors.text.secondary }}>
-            We&apos;d love to hear from you. Send us a message and we'll respond as soon as possible.
+            We&apos;d love to hear from you. Send us a message and we&apos;ll respond as soon as possible.
           </p>
         </div>
 
@@ -165,6 +171,12 @@ const ContactPage = () => {
                     required
                   />
                 </div>
+
+                {submitted ? (
+                  <div className="rounded-lg border px-4 py-3 text-sm" style={{ borderColor: colors.border.light, color: colors.text.accent }}>
+                    Your email client has been opened with the drafted support message.
+                  </div>
+                ) : null}
 
                 <button
                   type="submit"

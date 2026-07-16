@@ -1,6 +1,7 @@
 "use client"
 import React from "react"
 import { login as loginAction } from "@/app/actions/auth/login"
+import { logout as logoutAction } from "@/app/actions/auth/logout"
 import { signup as signupAction } from "@/app/actions/auth/signup"
 
 type UserData = {
@@ -138,6 +139,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     localStorage.removeItem(STORAGE_USER_KEY)
     localStorage.removeItem(STORAGE_TOKEN_KEY)
+
+    void logoutAction()
   }, [])
 
   const value = React.useMemo(

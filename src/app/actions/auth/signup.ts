@@ -1,8 +1,8 @@
 "use server"
 
-import { cookies } from "next/headers"
 import { AxiosError } from "axios"
 import { apiHandler } from "@/app/utils/ApiHandler"
+import { login } from "./login"
 
 type SignupInput = {
   userName: string
@@ -25,140 +25,29 @@ type AuthResponse = {
   user: UserData
 }
 
-// export async function signup(
-//   payload: SignupInput
-// ): Promise<AuthResponse> {
-//   try {
-//     const res = await apiHandler.post("/auth/signup", {
-//       userName: payload.userName,
-//       password: payload.password,
-//       role: payload.role,
-//       email: payload.email,
-//     })
-
-//     const data = res.data ?? {}
-//     const token = data.access_token
-
-//     const newUser = data.newUser ?? data.user ?? {}
-//     const user: UserData = {
-//       id: newUser.id ?? newUser.userId ?? data.id,
-//       userName: newUser.userName ?? data.userName,
-//       name: newUser.name ?? data.name ?? newUser.userName,
-//       email: newUser.email ?? data.email,
-//       role:
-//         newUser.role ??
-//         data.role ??
-//         data.newUser?.role ??
-//         data.user?.role,
-//     }
-//     console.log("Signup successful, user:", user)
-//     const role = user.role
-
-//     if (!role || !user.id) {
-//       throw new Error("Invalid signup response from server")
-//     }
-
-//     const cookieStore = await cookies()
-//     if (token) {
-//       cookieStore.set("access_token", token, {
-//         httpOnly: true,
-//         secure: process.env.NODE_ENV === "production",
-//         sameSite: "lax",
-//         path: "/",
-//       })
-//     }
-
-//     cookieStore.set("role", role, {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === "production",
-//       sameSite: "lax",
-//       path: "/",
-//     })
-
-//     return { role, access_token: token, user }
-//   } catch (error) {
-//     const err = error as AxiosError<any>
-//     const status = err.response?.status ?? 500
-//     const data = err.response?.data
-//     const message =
-//       data?.message ??
-//       data?.error ??
-//       (status === 409 ? "User already exists" : "Signup failed")
-//     console.log("Signup failed, error:", message)
-//     throw new Error(message)
-//   }
-// }
-
-export async function signup(
-  payload: SignupInput
-): Promise<AuthResponse> {
-  let user: UserData | null = null
-
+export async function signup(payload: SignupInput): Promise<AuthResponse> {
   try {
-    const res = await apiHandler.post("/auth/signup", {
+    await apiHandler.post("/auth/signup", {
       userName: payload.userName,
       password: payload.password,
       role: payload.role,
       email: payload.email,
     })
 
-    const data = res.data ?? {}
-    const token = data.access_token
-
-    const newUser = data.newUser ?? data.user ?? {}
-    user = {
-      id: newUser.id ?? newUser.userId ?? data.id,
-      userName: newUser.userName ?? data.userName,
-      name: newUser.name ?? data.name ?? newUser.userName,
-      email: newUser.email ?? data.email,
-      role:
-        newUser.role ??
-        data.role ??
-        data.newUser?.role ??
-        data.user?.role,
-    }
-
-    console.log("Signup successful, user:", user)
-
-    const role = user.role
-
-    if (!role || !user.id) {
-      console.warn("Signup response missing fields:", { user, data })
-    }
-
-    const cookieStore = await cookies()
-
-    if (token) {
-      cookieStore.set("access_token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-      })
-    }
-
-    cookieStore.set("role", role, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
+    // The backend signup token does not include the same claims as login.
+    // Log in immediately to obtain the full session payload used by protected routes.
+    return login({
+      userName: payload.userName,
+      password: payload.password,
     })
-
-    return { role, access_token: token, user }
   } catch (error) {
-    const err = error as AxiosError<any>
+    const err = error as AxiosError<{ message?: string; error?: string }>
     const status = err.response?.status ?? 500
     const data = err.response?.data
-
     const message =
       data?.message ??
       data?.error ??
       (status === 409 ? "User already exists" : "Signup failed")
-
-    // 👇 log user even in failure
-    console.log("Signup failed")
-    console.log("User (if available):", user ?? payload)
-    console.log("Error message:", message)
 
     throw new Error(message)
   }

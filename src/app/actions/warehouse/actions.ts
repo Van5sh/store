@@ -1,18 +1,27 @@
 import { apiHandler } from "@/app/utils/ApiHandler"
-import type { createWarehouseType } from "@/interfaces/warehouse"
+import type { createWarehouseType, WarehouseData } from "@/interfaces/warehouse"
+import { getStoredAuthUser, getStoredToken } from "@/lib/auth-storage"
 
-/* =========================
-   CREATE WAREHOUSE
-========================= */
+type ApiErrorResponse = {
+  message?: string
+  error?: string
+}
+
+function authHeaders() {
+  const token = getStoredToken()
+  if (!token) {
+    throw new Error("Authentication token missing")
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+  }
+}
+
 export async function createWarehouse(data: createWarehouseType) {
   try {
     if (!data) {
       throw new Error("Missing warehouse data")
-    }
-
-    const token = localStorage.getItem("auth_token")
-    if (!token) {
-      throw new Error("Authentication token missing")
     }
 
     const res = await apiHandler.post(
@@ -24,73 +33,49 @@ export async function createWarehouse(data: createWarehouseType) {
         cityName: data.city,
       },
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: authHeaders(),
       }
     )
 
-    console.log("✅ Warehouse created:", res.data)
-
-    return res.data
-  } catch (error: any) {
+    return res.data?.data ?? res.data
+  } catch (error: unknown) {
+    const err = error as {
+      response?: { data?: ApiErrorResponse }
+      message?: string
+    }
     const message =
-      error?.response?.data?.message ||
-      error?.response?.data?.error ||
-      error?.message ||
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      err.message ||
       "Failed to create warehouse"
-
-    console.error("❌ createWarehouse error:", message)
 
     throw new Error(message)
   }
 }
 
-/* =========================
-   GET WAREHOUSES
-========================= */
-export async function getWarehouses() {
+export async function getWarehouses(): Promise<WarehouseData[]> {
   try {
-    const userRaw = localStorage.getItem("auth_user")
-
-    if (!userRaw) {
-      throw new Error("User not found in localStorage")
-    }
-
-    let userData: { id?: string }
-
-    try {
-      userData = JSON.parse(userRaw)
-    } catch {
-      throw new Error("Invalid auth_user format")
-    }
-
-    if (!userData?.id) {
+    const userId = getStoredAuthUser()?.id
+    if (!userId) {
       throw new Error("User ID not found")
     }
 
-    const token = localStorage.getItem("auth_token")
-    if (!token) {
-      throw new Error("Authentication token missing")
-    }
-
-    const res = await apiHandler.get(`/warehouse/${userData.id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    const res = await apiHandler.get(`/warehouse/${userId}`, {
+      headers: authHeaders(),
     })
 
-    console.log("Warehouses fetched:", res.data)
-
-    return res.data
-  } catch (error: any) {
+    const warehouses = res.data?.data ?? res.data
+    return Array.isArray(warehouses) ? (warehouses as WarehouseData[]) : []
+  } catch (error: unknown) {
+    const err = error as {
+      response?: { data?: ApiErrorResponse }
+      message?: string
+    }
     const message =
-      error?.response?.data?.message ||
-      error?.response?.data?.error ||
-      error?.message ||
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      err.message ||
       "Failed to fetch warehouses"
-
-    console.error("getWarehouses error:", message)
 
     throw new Error(message)
   }

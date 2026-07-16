@@ -19,6 +19,16 @@ interface Order {
     orderDate: string;
 }
 
+type OrderSummary = {
+    orderId?: string
+    id?: string
+    _id?: string
+    orderItemName?: string
+    itemName?: string
+    orderDate?: string
+    createdAt?: string
+}
+
 const CustomerPage = () => {
     const router = useRouter()
     const { user } = useAuth()
@@ -30,7 +40,7 @@ const CustomerPage = () => {
     const productItems = [
         { label: "Electronics", img: "💻", type:"electronics"},
         { label: "Clothing", img: "👕", type: "clothing" },
-        { label: "Home & Garden", img: "🏡", type: "home-garden" },
+        { label: "Home Appliances", img: "🏡", type: "home_appliances" },
         { label: "Sports", img: "⚽", type: "sports" },
         { label: "Books", img: "📚", type: "books" },
         { label: "Toys", img: "🎮", type: "toys" }
@@ -63,7 +73,7 @@ const CustomerPage = () => {
                     ? data
                     : []
 
-                const mapped: Order[] = list.map((order: any) => ({
+                const mapped: Order[] = (list as OrderSummary[]).map((order) => ({
                     id: String(order.orderId ?? order.id ?? order._id),
                     itemName: order.orderItemName ?? order.itemName ?? "Order",
                     orderDate: order.orderDate ?? order.createdAt ?? "N/A",

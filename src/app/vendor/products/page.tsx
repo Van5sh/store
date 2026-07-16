@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
 import Modal from "@/components/vendor-ui/Modal"
 import { Input } from "@/components/ui/input"
 import {
@@ -20,9 +19,11 @@ import Image from "next/image"
 import {
   getVendorProducts,
   type ProductItem,
+  getProductsByStoreId,
 } from "@/app/actions/product/get-products"
 import { Trash2, Plus, Package, Upload, X, AlertCircle } from "lucide-react"
 import { deleteProduct } from "@/app/actions/product/delete-product"
+import { getStoredAuthUser } from "@/lib/auth-storage"
 
 const PRODUCT_CATEGORY_LABEL: Record<ProductCategory, string> = {
   [ProductCategory.electronics]: "Electronics",
@@ -44,7 +45,6 @@ const CATEGORY_COLORS: Record<ProductCategory, string> = {
 
 const VendorProductsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [step, setStep] = useState(1)
   const [warehouses, setWarehouses] = useState<WarehouseData[]>([])
   const [stores, setStores] = useState<VendorStore[]>([])
   const [products, setProducts] = useState<ProductItem[]>([])
@@ -54,22 +54,23 @@ const VendorProductsPage = () => {
   const [error, setError] = useState<string | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
 
-  const openModal = () => { setIsModalOpen(true); setStep(1); setError(null) }
+  const openModal = () => { setIsModalOpen(true); setError(null) }
   const closeModal = () => { setIsModalOpen(false); setImagePreview(null); setError(null) }
 
   const getVendorId = () => {
+    return getStoredAuthUser()?.id ?? ""
+  }
+
+  const getActiveStoreId = () => {
     if (typeof window === "undefined") return ""
-    try {
-      const user = JSON.parse(localStorage.getItem("auth_user") || "{}")
-      return user?.id ?? ""
-    } catch { return "" }
+    return localStorage.getItem("active_store_id") ?? ""
   }
 
   const [productData, setProductData] = useState<CreateProduct>(() => ({
     productName: "",
     productPrice: 0,
     vendorId: getVendorId(),
-    storeId: typeof window !== "undefined" ? localStorage.getItem("active_store_id") ?? "" : "",
+    storeId: getActiveStoreId(),
     warehouseId: "",
     quantity: 0,
     productCategory: ProductCategory.electronics,
@@ -79,7 +80,7 @@ const VendorProductsPage = () => {
   useEffect(() => {
     const fetchWarehouses = async () => {
       const res = await getWarehouses()
-      setWarehouses(res.data)
+      setWarehouses(res)
     }
     const fetchStores = async () => {
       const vendorId = getVendorId()
@@ -96,14 +97,23 @@ const VendorProductsPage = () => {
     fetchStores()
   }, [])
 
+  useEffect(() => {
+    setProductData((prev) => ({
+      ...prev,
+      vendorId: getVendorId(),
+      storeId: getActiveStoreId(),
+    }))
+  }, [])
+
   const fetchProducts = React.useCallback(async () => {
     setLoadingProducts(true)
     setError(null)
     try {
-      const vendorProducts = await getVendorProducts()
-      const storeId = typeof window !== "undefined" ? localStorage.getItem("active_store_id") : null
-      const filtered = storeId ? vendorProducts.filter((p: any) => p.storeId === storeId) : vendorProducts
-      setProducts(filtered)
+      const storeId = getActiveStoreId()
+      const nextProducts = storeId
+        ? await getProductsByStoreId(storeId)
+        : await getVendorProducts()
+      setProducts(nextProducts)
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to fetch products")
       setProducts([])
@@ -124,6 +134,20 @@ const VendorProductsPage = () => {
     window.addEventListener("storage", handler)
     return () => window.removeEventListener("storage", handler)
   }, [fetchProducts])
+
+  useEffect(() => {
+    const syncSelections = () => {
+      setProductData((prev) => ({
+        ...prev,
+        vendorId: getVendorId(),
+        storeId: getActiveStoreId(),
+      }))
+    }
+
+    syncSelections()
+    window.addEventListener("storage", syncSelections)
+    return () => window.removeEventListener("storage", syncSelections)
+  }, [])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null
@@ -163,6 +187,7 @@ const VendorProductsPage = () => {
         productPrice: 0,
         quantity: 0,
         warehouseId: "",
+        storeId: getActiveStoreId(),
         file: null,
       }))
       setImagePreview(null)

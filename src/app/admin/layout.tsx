@@ -1,7 +1,6 @@
 "use client";
 import Sidebar from "@/components/admin-ui/Sidebar";
 import React, { useState } from "react";
-import Dashboard from "./dashboard/page";
 
 type AdminLayoutProps = {
   children: React.ReactNode;

@@ -14,7 +14,11 @@ interface City {
 
 async function getCities(): Promise<City[]> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/city`, {
+    const baseUrl =
+      process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/+$/, "") ||
+      "http://localhost:5100"
+
+    const res = await fetch(`${baseUrl}/city`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -27,7 +31,7 @@ async function getCities(): Promise<City[]> {
     }
 
     const json = await res.json()
-    const data = json.data
+    const data = Array.isArray(json) ? json : json?.data
 
     if (!Array.isArray(data)) {
       throw new Error("Cities response is not an array")

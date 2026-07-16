@@ -200,7 +200,7 @@ const TopNavigation: React.FC<NavigationMenuProps> = ({ items }) => {
             {userMenuOpen && (
               <div className="absolute right-0 mt-3 w-40 rounded-xl shadow-xl overflow-hidden z-50" style={{ backgroundColor: colors.background.card, borderColor: colors.border.soft, borderWidth: '1px' }}>
                 <Link
-                  href="/customer/profile"
+                  href="/customer/user"
                   className="block px-4 py-2 text-sm transition-colors"
                   style={{ color: colors.text.secondary }}
                   onMouseEnter={(e) => {

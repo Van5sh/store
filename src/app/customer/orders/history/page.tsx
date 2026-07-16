@@ -14,6 +14,16 @@ interface Order {
     orderName: string
 }
 
+type OrderHistoryItem = {
+    orderId?: string
+    id?: string
+    orderDate?: string
+    createdAt?: string
+    orderStatus?: string
+    orderItemName?: string
+    productName?: string
+}
+
 const statusConfig: Record<string, { bg: string; text: string; border: string; icon: React.ReactNode }> = {
     delivered:  { bg: "#10261A", text: "#22C55E", border: "#1B3A27", icon: <CheckCircle2 size={13} /> },
     pending:    { bg: colors.amber[50], text: colors.amber[700], border: colors.border.light, icon: <Clock size={13} /> },
@@ -51,7 +61,7 @@ const HistoryPage = () => {
                     : Array.isArray(data)
                     ? data
                     : []
-                const sorted = [...list].sort((a: any, b: any) => {
+                const sorted = [...(list as OrderHistoryItem[])].sort((a, b) => {
                     const aDate = new Date(a.orderDate ?? a.createdAt ?? 0).getTime()
                     const bDate = new Date(b.orderDate ?? b.createdAt ?? 0).getTime()
                     return bDate - aDate
@@ -122,7 +132,7 @@ const HistoryPage = () => {
                 </div>
             ) : (
                 <div className="space-y-3">
-                    {orders.map((order: any) => {
+                    {orders.map((order) => {
                         const status = order.orderStatus ?? "N/A"
                         const style = getStatusStyle(status)
                         return (

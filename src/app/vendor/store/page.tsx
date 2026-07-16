@@ -29,7 +29,6 @@ import {
   Warehouse,
 } from "lucide-react";
 import {
-  getStoreProducts,
   getProductsByStoreId,
   type ProductItem,
 } from "@/app/actions/product/get-products";
@@ -99,7 +98,7 @@ const StorePage = () => {
       }
     })();
     return () => { cancelled = true; };
-  }, [user?.id]);
+  }, [user?.id, activeStoreId]);
 
   const handleCreateStore = async () => {
     if (!storeForm.storeName.trim() || !storeForm.cityName) {

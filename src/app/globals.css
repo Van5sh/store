@@ -44,6 +44,8 @@
 }
 
 :root {
+  --font-geist-sans: Arial, Helvetica, sans-serif;
+  --font-geist-mono: "Courier New", Courier, monospace;
   --radius: 0.625rem;
   --background: #f2f4f1;
   --foreground: #28302b;

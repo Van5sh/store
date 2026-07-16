@@ -4,6 +4,11 @@ import { cookies } from "next/headers"
 import { AxiosError } from "axios"
 import { apiHandler } from "@/app/utils/ApiHandler"
 
+type ApiErrorResponse = {
+  message?: string
+  error?: string
+}
+
 export async function getRecentOrders() {
   const token = (await cookies()).get("access_token")?.value
 
@@ -14,7 +19,7 @@ export async function getRecentOrders() {
 
     return res.data
   } catch (error) {
-    const err = error as AxiosError<any>
+    const err = error as AxiosError<ApiErrorResponse>
     const status = err.response?.status ?? 500
     const data = err.response?.data
     const message =

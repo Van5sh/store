@@ -4,6 +4,11 @@ import { cookies } from "next/headers"
 import { AxiosError } from "axios"
 import { apiHandler } from "@/app/utils/ApiHandler"
 
+type ApiErrorResponse = {
+  message?: string
+  error?: string
+}
+
 type OrderHistoryInput = {
   userId: string
   status?: string
@@ -40,7 +45,7 @@ export async function getOrderHistory(
 
     return { orders }
   } catch (error) {
-    const err = error as AxiosError<any>
+    const err = error as AxiosError<ApiErrorResponse>
     const status = err.response?.status ?? 500
     const data = err.response?.data
     const message =

@@ -1,8 +1,12 @@
 import { apiHandler } from "@/app/utils/ApiHandler"
+import { getStoredAuthUser, getStoredToken } from "@/lib/auth-storage"
 
 export type WarehouseInfo = {
   warehouseId: string
   warehouseName: string
+  warehouseCapacity?: number
+  remainingSpace?: number
+  cityId?: string
 }
 
 export type ProductInventoryItem = {
@@ -22,69 +26,85 @@ export type ProductItem = {
   inventory?: ProductInventoryItem[]
 }
 
+type StoreProductResponse = {
+  storeId: string
+  productId: string
+  vendorId: string
+  product?: ProductItem
+}
+
+function authHeaders() {
+  const token = getStoredToken()
+  if (!token) {
+    throw new Error("Authentication token missing")
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+  }
+}
+
+function normalizeStoreProducts(data: unknown): ProductItem[] {
+  if (!Array.isArray(data)) return []
+
+  return data
+    .map((item) => {
+      const row = item as StoreProductResponse | ProductItem
+      return "product" in row && row.product ? row.product : (row as ProductItem)
+    })
+    .filter((item): item is ProductItem => Boolean(item?.productId))
+}
+
 export async function getAllProducts(): Promise<ProductItem[]> {
   const res = await apiHandler.get("/products", {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-    },
+    headers: authHeaders(),
   })
-  return (res.data ?? []) as ProductItem[]
+
+  return Array.isArray(res.data) ? (res.data as ProductItem[]) : []
 }
 
-export async function getStoreProducts(storeId: string): Promise<Array<{ productId: string }>> {
+export async function getStoreProducts(
+  storeId: string
+): Promise<Array<{ productId: string }>> {
   if (!storeId) throw new Error("Missing storeId")
-  const res = await apiHandler.get(`/products/store/${storeId}`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-    },
-  })
-  return (res.data ?? []) as Array<{ productId: string }>
-}
 
+  const products = await getProductsByStoreId(storeId)
+  return products.map((product) => ({ productId: product.productId }))
+}
 
 export async function getVendorProducts(): Promise<ProductItem[]> {
-  let vendorId = ""
-  if (typeof window !== "undefined") {
-      const userRaw = localStorage.getItem("auth_user")
-      if (userRaw) {
-          try {
-            const parsed = JSON.parse(userRaw) as { id?: string }
-            console.log("Parsed auth_user from localStorage:", parsed)
-            vendorId = parsed?.id ?? ""
-          } catch (e) {
-              console.log("Failed to parse auth_user from localStorage, using empty vendorId", e)
-          }
-        } else {
-            console.log("No auth_user found in localStorage, using empty vendorId")
-        }
-      }
+  const vendorId = getStoredAuthUser()?.id ?? ""
   if (!vendorId) {
-    console.warn("Vendor ID is empty, getVendorProducts will likely fail")
+    throw new Error("Vendor not found")
   }
+
   const res = await apiHandler.get(`/products/vendor/${vendorId}`, {
-    headers: {  Authorization: `Bearer ${localStorage.getItem("auth_token")}` },
+    headers: authHeaders(),
   })
-  return (res.data ?? []) as ProductItem[]
+
+  return Array.isArray(res.data) ? (res.data as ProductItem[]) : []
 }
 
-export async function getProductInventory(productId: string): Promise<ProductInventoryItem[]> {
+export async function getProductInventory(
+  productId: string
+): Promise<ProductInventoryItem[]> {
   if (!productId) throw new Error("Missing productId")
-  const res = await apiHandler.get(`/inventory/product/${productId}`, {
-    headers: {  Authorization: `Bearer ${localStorage.getItem("auth_token")}` },
+
+  const res = await apiHandler.get(`/products/details/${productId}`, {
+    headers: authHeaders(),
   })
-  return (res.data ?? []) as ProductInventoryItem[]
+
+  return Array.isArray(res.data?.inventory)
+    ? (res.data.inventory as ProductInventoryItem[])
+    : []
 }
 
-export async function getProductsByStoreId(
-    storeId: string
-): Promise<ProductItem[]> {
+export async function getProductsByStoreId(storeId: string): Promise<ProductItem[]> {
   if (!storeId) throw new Error("Missing storeId")
 
   const res = await apiHandler.get(`/products/store/${storeId}`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-    },
+    headers: authHeaders(),
   })
 
-  return (res.data ?? []) as ProductItem[]
+  return normalizeStoreProducts(res.data)
 }

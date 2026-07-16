@@ -4,6 +4,11 @@ import { cookies } from "next/headers"
 import { AxiosError } from "axios"
 import { apiHandler } from "@/app/utils/ApiHandler"
 
+type ApiErrorResponse = {
+  message?: string
+  error?: string
+}
+
 type LoginInput = {
   userName: string
   password: string
@@ -40,7 +45,7 @@ export async function login(payload: LoginInput): Promise<AuthResponse> {
     const data = res.data ?? {}
     const user: UserData = {
       id: data.id,
-      userName: data.name ?? data.userName,
+      userName: data.userName ?? data.name,
       name: data.name,
       email: data.email,
       role: data.role,
@@ -75,7 +80,7 @@ export async function login(payload: LoginInput): Promise<AuthResponse> {
       user,
     }
   } catch (error) {
-    const err = error as AxiosError<any>
+    const err = error as AxiosError<ApiErrorResponse>
     const status = err.response?.status ?? 500
     const data = err.response?.data
     const message =
